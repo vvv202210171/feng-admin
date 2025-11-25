@@ -15,38 +15,26 @@
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div> -->
 
-      <a-table
-        ref="table"
-        size="default"
-        row-key="autoid"
-        :loading="loading"
-        :scroll="{ x: 980 }"
-        bordered
-        :columns="columns"
-        :dataSource="loadData"
-        :pagination="pagination"
-      >
-        <template slot="googleUrl" slot-scope="text, record">
-          <ImagePreview
-            :imageUrl="generateQRCode(record.googleUrl)"
-            :title="record.username + '的谷歌验证器'"
-          ></ImagePreview>
-          <!-- <p>{{ record.googleUrl }}</p> -->
+      <a-table ref="table" size="default" row-key="autoid" :loading="loading" :scroll="{ x: 980 }" bordered
+        :columns="columns" :dataSource="loadData" :pagination="pagination">
+        <template slot="googleurl" slot-scope="text, record">
+          <ImagePreview :imageUrl="generateQRCode(record.googleurl)" :title="record.username + '的谷歌验证器'"></ImagePreview>
+          <!-- <p>{{ record.googleurl }}</p> -->
         </template>
 
-        <template slot="googleUrlFont" slot-scope="text, record">
-          <p>{{ record.googleUrl }}</p>
+        <template slot="googleurlFont" slot-scope="text, record">
+          <p>{{ record.googleurl }}</p>
         </template>
 
-        <template slot="is_bind" slot-scope="text, record">
-          <span v-if="record.is_bind === '1'" style="color: #eb1345">未绑定</span>
+        <template slot="isBind" slot-scope="text, record">
+          <span v-if="record.isBind === '1'" style="color: #eb1345">未绑定</span>
           <span v-else>已绑定</span>
         </template>
 
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleChange(record)" :disabled="!$verify('107018')">{{
-              record.is_bind === '1' ? '绑定密钥' : '更换密钥'
+              record.isBind === '1' ? '绑定密钥' : '更换密钥'
             }}</a>
             <!-- <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
@@ -77,7 +65,7 @@ import QRCode from 'qrcode-generator'
 const columns = [
   {
     title: 'ID',
-    dataIndex: 'autoid',
+    dataIndex: 'id',
     width: 80
   },
   {
@@ -86,7 +74,7 @@ const columns = [
     width: 110
   },
   {
-    dataIndex: 'secretKey',
+    dataIndex: 'secretkey',
     title: '密钥key',
     width: 200
   },
@@ -96,25 +84,25 @@ const columns = [
     width: 120
   },
   {
-    dataIndex: 'googleUrl',
+    dataIndex: 'googleurl',
     title: '二维码',
     width: 180,
-    scopedSlots: { customRender: 'googleUrl' }
+    scopedSlots: { customRender: 'googleurl' }
   },
   {
-    dataIndex: 'googleUrlFont',
+    dataIndex: 'googleurlFont',
     title: '二维码地址',
     width: 280,
-    scopedSlots: { customRender: 'googleUrlFont' }
+    scopedSlots: { customRender: 'googleurlFont' }
   },
   {
-    dataIndex: 'is_bind',
+    dataIndex: 'isBind',
     title: '绑定',
     width: 180,
-    scopedSlots: { customRender: 'is_bind' }
+    scopedSlots: { customRender: 'isBind' }
   },
   {
-    dataIndex: 'update_date',
+    dataIndex: 'writedate',
     title: '创建时间',
     width: 160
   },
@@ -193,94 +181,28 @@ export default {
   },
   methods: {
     handleChange(record) {
-      // console.log(bindGoogleVerify)
       const ts = this
-      const newBind = record.is_bind === '1' ? '0' : '2'
-      const confirmTitle = record.is_bind === '1' ? '绑定' : '刷新'
+      const newBind = record.isBind === '1' ? '0' : '2'
+      const confirmTitle = record.isBind === '1' ? '绑定' : '刷新'
       const delMod = Modal.confirm({
         centered: true,
         maskClosable: true,
         title: '提示信息',
-        content: `确定${confirmTitle}编号为【${record.autoid}】的记录？`,
+        content: `确定${confirmTitle}编号为【${record.username}】的记录？`,
         onOk: () => {
-          const username = this.$store.getters.username
-
           bindGoogleVerify({
-            username,
-            user_name: record.username,
-            autoid: record.autoid,
-            is_bind: newBind
+            id: record.id,
+            isBind: newBind
           }).then((res) => {
-            console.log(res)
+            if (res.code !== 0) {
+              this.$message.error()
+            }
             ts.getData()
             delMod.destroy()
           })
         },
-        onCancel() {}
+        onCancel() { }
       })
-    },
-    handleAdd() {
-      // get menu data
-      this.roleMenus = []
-      this.mdl = null
-      this.visible = true
-    },
-    handleEdit(record) {
-      // get menu data
-      this.roleMenus = []
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    handleOk() {
-      // const form = this.$refs.createModal.form
-      // const username = this.$store.getters.username
-      // this.confirmLoading = true
-      // form.validateFields((errors, values) => {
-      //   if (!errors) {
-      //     // 添加username
-      //     values = {
-      //       ...values,
-      //       username
-      //     }
-      //     Object.keys(values).map(e => {
-      //       if (values[e] === undefined) {
-      //         values[e] = ''
-      //       }
-      //     })
-      //     console.log(values)
-      //     if (values.autoid > 0) {
-      //       // 修改 e.g.
-      //       editUserLevel(values)
-      //         .then(res => {
-      //           console.log(res)
-      //           this.visible = false
-      //           this.confirmLoading = false
-      //           // 重置表单数据
-      //           form.resetFields()
-      //           // 刷新表格
-      //           // this.$refs.table.refresh()
-      //           this.getData()
-      //           this.$message.success('修改成功')
-      //         })
-      //     } else {
-      //       // 新增
-      //       // addUserLevel(values)
-      //       //   .then(res => {
-      //       //     console.log(res)
-      //       //     this.visible = false
-      //       //     this.confirmLoading = false
-      //       //     // 重置表单数据
-      //       //     form.resetFields()
-      //       //     // 刷新表格
-      //       //     // this.$refs.table.refresh()
-      //       //     this.getData()
-      //       //     this.$message.success('新增成功')
-      //       //   })
-      //     }
-      //   } else {
-      //     this.confirmLoading = false
-      //   }
-      // })
     },
     generateQRCode(text) {
       const typeNumber = 8
@@ -298,34 +220,7 @@ export default {
       form.resetFields() // 清理表单数据（可不做）
       this.roleMenus = []
     },
-    handleDel(record) {
-      // // const ts = this
-      // // const delMod =
-      // Modal.confirm({
-      //   centered: true,
-      //   maskClosable: true,
-      //   title: '提示信息',
-      //   content: `确定删除【${record.username}】的记录？`,
-      //   onOk: () => {
-      //     // return new Promise((resolve, reject) => {
-      //     //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-      //     // }).catch(() => console.log('Oops errors!'))
-      //     // return this.$store.dispatch('Logout').then(() => {
-      //     //   this.$router.push({ name: 'login' })
-      //     // })
-      //     // delUserLevel({
-      //     //   username: record.username,
-      //     //   autoid: record.autoid
-      //     // })
-      //     //   .then(res => {
-      //     //     console.log(res)
-      //     //     ts.getData()
-      //     //     delMod.destroy()
-      //     //   })
-      //   },
-      //   onCancel () {}
-      // })
-    },
+
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
@@ -338,9 +233,9 @@ export default {
 
       const res = await getGoogleList(this.queryParam)
       const { code, data, count } = res
-      if (code === '0') {
-        this.loadData = data
-        this.pagination.total = count
+      if (code === 0) {
+        this.loadData = data.records
+        this.pagination.total = data.total
       } else {
         console.log(res)
       }

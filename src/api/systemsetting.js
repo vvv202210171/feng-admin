@@ -398,13 +398,11 @@ export function getGoogleList(parameter) {
     // data: parameter
   })
 }
-export function bindGoogleVerify(parameter) {
-  const params = `param=${JSON.stringify(parameter)}`
+export function bindGoogleVerify(data) {
   return request({
-    chineseURI: true, // 中文乱码，转变提交内容类型
     url: api.googleverifyBind,
     method: 'post',
-    data: params
+    data
   })
 }
 // 白名单api
