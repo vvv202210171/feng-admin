@@ -395,7 +395,7 @@ export default {
               .then((res) => {
                 // console.log(res)
                 const { code, msg } = res;
-                if (code === "0") {
+                if (code === 0) {
                   this.visible = false;
                   this.confirmLoading = false;
                   // 重置表单数据
@@ -418,7 +418,7 @@ export default {
               .then((res) => {
                 // console.log(res)
                 const { code, msg } = res;
-                if (code === "0") {
+                if (code === 0) {
                   this.visible = false;
                   this.confirmLoading = false;
                   // 重置表单数据
@@ -430,7 +430,6 @@ export default {
                   this.$message.success("新增成功");
                 } else {
                   this.$message.error(msg);
-                  this.handleCancel();
                 }
               })
               .catch((e) => {
