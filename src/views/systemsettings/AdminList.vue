@@ -2,38 +2,16 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <!-- :model="queryParam" -->
-      <a-form
-        name="adminSearch"
-        layout="inline"
-        autocomplete="off"
-        style="margin-bottom: 14px"
-        @submit="doSearch"
-      >
+      <a-form name="adminSearch" layout="inline" autocomplete="off" style="margin-bottom: 14px" @submit="doSearch">
         <a-form-item label="">
-          <a-input
-            style="width: 240px"
-            v-model="queryParam.key"
-            placeholder="请输入要搜索的内容"
-          >
+          <a-input style="width: 240px" v-model="queryParam.key" placeholder="请输入要搜索的内容">
           </a-input>
         </a-form-item>
         <a-form-item>
-          <a-button
-            htmlType="submit"
-            :disabled="disabledSearch"
-            type="primary"
-            @click="doSearch"
-            >查询</a-button
-          >
+          <a-button htmlType="submit" :disabled="disabledSearch" type="primary" @click="doSearch">查询</a-button>
         </a-form-item>
         <a-form-item>
-          <a-button
-            type="primary"
-            icon="plus"
-            @click="handleAdd"
-            :disabled="!$verify('107022')"
-            >新建管理员</a-button
-          >
+          <a-button type="primary" icon="plus" @click="handleAdd" :disabled="!$verify('107022')">新建管理员</a-button>
         </a-form-item>
       </a-form>
 
@@ -69,19 +47,10 @@
             <a-divider type="vertical" />
             <a @click="handleDel(record)">删除</a>
           </template>
-        </span>
-      </s-table> -->
-      <a-table
-        ref="table"
-        size="default"
-        row-key="autoid"
-        :scroll="{ x: 980 }"
-        bordered
-        :loading="loading"
-        :columns="columns"
-        :dataSource="loadData"
-        :pagination="pagination"
-      >
+</span>
+</s-table> -->
+      <a-table ref="table" size="default" row-key="autoid" :scroll="{ x: 980 }" bordered :loading="loading"
+        :columns="columns" :dataSource="loadData" :pagination="pagination">
         <!-- <span slot="range" slot-scope="text, record">
           <trend :flag="record.status === 0 ? 'up' : 'down'">
             {{ text }}%
@@ -103,26 +72,10 @@
         </span>
       </a-table>
 
-      <CreateForm
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :roles="roleMenus"
-        :model="mdl"
-        :issuper1="issuper1"
-        @cancel="handleCancel"
-        @ok="handleOk"
-        @transferChange="transferChange"
-      />
-      <ChangeCode
-        ref="chagneCode"
-        :visible="visibleChangeCode"
-        :roles="roleMenus"
-        :model="changePwdModel"
-        @cancel="handleChangePwdModelCancel"
-        @ok="handleCodeOk"
-        @transferChange="transferChange"
-      />
+      <CreateForm ref="createModal" :visible="visible" :loading="confirmLoading" :roles="roleMenus" :model="mdl"
+        :issuper1="issuper1" @cancel="handleCancel" @ok="handleOk" @transferChange="transferChange" />
+      <ChangeCode ref="chagneCode" :visible="visibleChangeCode" :roles="roleMenus" :model="changePwdModel"
+        @cancel="handleChangePwdModelCancel" @ok="handleCodeOk" @transferChange="transferChange" />
       <!-- <step-by-step-modal ref="modal" @ok="handleOk"/> -->
     </a-card>
   </page-header-wrapper>
@@ -361,22 +314,8 @@ export default {
       this.targetsArr = [];
       this.rolesArr = [];
       this.roleMenus = {};
-      // for (let i = 0; i < 20; i++) {
-      //   const data = {
-      //     key: i.toString(),
-      //     title: `content${i + 1}`,
-      //     description: `description of content${i + 1}`,
-      //     chosen: Math.random() * 2 > 1
-      //   }
-      //   if (data.chosen) {
-      //     targetKeys.push(data.key)
-      //   }
-      //   mockData.push(data)
-      // }
       if (this.version === "1.0") {
         await this.getMenus(record);
-      } else {
-        await this.getMenus2(record);
       }
     },
     async getMenus(record) {
@@ -389,89 +328,40 @@ export default {
           return;
         }
         const data = res.data;
-        for (let item in data) {
-          console.log(item);
+        for (const item of data) {
           rolesArr.push({
-            key: JSON.stringify({ value: item.value }), // { value: item.value, title: item.title },
+            key: JSON.stringify({ value: item.value }),
             title: item.title,
             description: item.title,
             chosen: false,
-          });
+          })
         }
-
         this.rolesArr = rolesArr;
       } else {
-        const res = await getAdminNotMenu({ user: record.username });
-        const { list, list2 } = res;
-        const tarArr = [];
-        // this.rolesArr = rolesArr
-        for (let i = 0; i < list.length; i++) {
-          const item = list[i];
+        const { code, data } = await getAdminNotMenu({ user: record.username });
+        if (code !== 0) {
+          this.$message.error(data.msg);
+          return;
+        }
+        const { all, self } = data;
+        for (const item of all) {
           rolesArr.push({
-            key: JSON.stringify({ value: item.value }), // { value: item.value, title: item.title },
+            key: JSON.stringify({ value: item.value }),
             title: item.title,
             description: item.title,
             chosen: false,
-          });
+          })
         }
-
-        for (let i = 0; i < list2.length; i++) {
-          const item = list2[i];
+        const tarArr = [];
+        // this.rolesArr = rolesArr
+        for (const item of self) {
           tarArr.push(JSON.stringify({ value: item.value }));
         }
         this.rolesArr = rolesArr;
         this.targetsArr = tarArr;
       }
     },
-    async getMenus2(record) {
-      // 新版使用
-      const rolesArr = [];
-      const tarArr = { checked: [], halfChecked: [] };
-      let param = {};
-      if (record && record.username) {
-        param = { user: record.username };
-      }
-      const res = await getAdminNotMenu2(param);
-      // console.log(res)
-      const { code, data, msg } = res;
-      if (code === "0") {
-        // console.log(data)
-        data.map((item) => {
-          const { name, children, menuid, isselect } = item; // 暂只有一层
-          let childLen = 0;
-          const per = {
-            title: name,
-            key: JSON.stringify({ value: menuid }),
-            children: children.map((e) => {
-              if (e.isselect) {
-                childLen++;
-                tarArr.checked.push(JSON.stringify({ value: e.menuid }));
-              }
-              return {
-                title: e.name,
-                key: JSON.stringify({ value: e.menuid }),
-              };
-            }),
-          };
-          if (isselect) {
-            // 判断全选还是半选
-            if (childLen === children.length) {
-              tarArr.checked.push(JSON.stringify({ value: menuid }));
-            } else {
-              tarArr.halfChecked.push(JSON.stringify({ value: menuid }));
-            }
-          }
-          rolesArr.push(per);
-        });
-      } else {
-        this.$message.error(msg);
-        this.handleCancel();
-      }
-      // console.log(rolesArr)
-      this.rolesArr = rolesArr;
-      this.targetsArr = tarArr;
-      // this.roleMenus.rolesArr = rolesArr
-    },
+
     transferChange(targetKeys) {
       this.targetsArr = targetKeys;
       this.roleMenus.targetsArr = targetKeys;
@@ -619,7 +509,7 @@ export default {
             delMod.destroy();
           });
         },
-        onCancel() {},
+        onCancel() { },
       });
     },
     // handleSub (record) {

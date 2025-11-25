@@ -2,7 +2,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "octref.vetur", // 或其他格式化器
   "[vue]": {
-    "editor.defaultFormatter": "Wscats.vue" // 覆盖 Vue 文件的默认格式化器
+    "editor.defaultFormatter": "Vue.volar" // 覆盖 Vue 文件的默认格式化器
   },
   "vetur.format.defaultFormatterOptions": {
     "js-beautify-html": {

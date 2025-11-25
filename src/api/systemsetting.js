@@ -158,17 +158,8 @@ export function editAdminPwd(parameter) {
   })
 }
 export function getAdminMenu(parameter) {
-  let { page, pageSize } = parameter
-  const { key } = parameter
-  if (!page) {
-    page = 1
-  }
-  if (!pageSize) {
-    pageSize = 500
-  }
-  const params = `?page=${page}&limit=${pageSize}${key ? '&key=' + key : ''}`
   return request({
-    url: api.adminMenu + params,
+    url: api.adminMenu ,
     method: 'get'
     // data: parameter
   })
