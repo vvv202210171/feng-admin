@@ -15,17 +15,8 @@
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div> -->
 
-      <a-table
-        ref="table"
-        size="default"
-        row-key="autoid"
-        :loading="loading"
-        :scroll="{ x: 980 }"
-        bordered
-        :columns="columns"
-        :dataSource="loadData"
-        :pagination="pagination"
-      >
+      <a-table ref="table" size="default" row-key="autoid" :loading="loading" :scroll="{ x: 980 }" bordered
+        :columns="columns" :dataSource="loadData" :pagination="pagination">
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleEdit(record)" :disabled="!$verify('107036')">编辑</a>
@@ -35,16 +26,8 @@
         </span>
       </a-table>
 
-      <s-modal
-        ref="createModal"
-        :config="modalConfig"
-        :visible="visible"
-        :loading="confirmLoading"
-        :options="modalOptions"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
+      <s-modal ref="createModal" :config="modalConfig" :visible="visible" :loading="confirmLoading"
+        :options="modalOptions" :model="mdl" @cancel="handleCancel" @ok="handleOk" />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -221,7 +204,7 @@ export default {
               .then((res) => {
                 console.log(res)
                 const { code, msg } = res
-                if (code === '0') {
+                if (code === 0) {
                   this.visible = false
                   this.confirmLoading = false
                   // 重置表单数据
@@ -308,9 +291,9 @@ export default {
 
       const res = await getHandselList(this.queryParam)
       const { code, data, count } = res
-      if (code === '0') {
-        this.loadData = data
-        this.pagination.total = count
+      if (code === 0) {
+        this.loadData = data.records
+        this.pagination.total = data.total
       } else {
         console.log(res)
       }
