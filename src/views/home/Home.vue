@@ -9,18 +9,12 @@
     <!-- sub-title="This is a subtitle" -->
     <a-row :gutter="24">
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card
-          :loading="loading"
-          :title="'待处理任务/实名审核'"
-        >
+        <chart-card :loading="loading" :title="'待处理任务/实名审核'">
           <a-statistic :value="taskInfo.realyname" />
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card
-          :loading="loading"
-          :title="'待处理任务/提币审核'"
-        >
+        <chart-card :loading="loading" :title="'待处理任务/提币审核'">
           <a-statistic :value="taskInfo.coinout" />
         </chart-card>
       </a-col>
@@ -78,24 +72,45 @@
           :total="statisticsInfo.cpus"
         >
           <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
+            <mini-progress
+              color="rgb(19, 194, 194)"
+              :target="80"
+              :percentage="78"
+              height="8px"
+            />
           </div>
           <!-- <template slot="footer">{{ $t('dashboard.analysis.conversion-rate') }} <span>60%</span></template> -->
         </chart-card>
       </a-col>
     </a-row>
 
-
-    <div class="antd-pro-pages-dashboard-analysis-twoColLayout" :class="!isMobile && 'desktop'">
+    <div
+      class="antd-pro-pages-dashboard-analysis-twoColLayout"
+      :class="!isMobile && 'desktop'"
+    >
       <a-row :gutter="24" type="flex" :style="{ marginTop: '24px' }">
         <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card :loading="loading" :bordered="false" :title="'资产预警（异常账户预警，以实际数据为准）'" :style="{ height: '100%' }">
+          <a-card
+            :loading="loading"
+            :bordered="false"
+            :title="'资产预警（异常账户预警，以实际数据为准）'"
+            :style="{ height: '100%' }"
+          >
             <div class="ant-table-wrapper">
               <a-table
-                :row-key="(record, inx) => { return inx }"
+                :row-key="
+                  (record, inx) => {
+                    return inx;
+                  }
+                "
                 size="small"
                 :columns="warningTradTable.columns"
-                :dataSource="warningTradTable.source.map((record, index) => ({ ...record, key: index }))"
+                :dataSource="
+                  warningTradTable.source.map((record, index) => ({
+                    ...record,
+                    key: index,
+                  }))
+                "
                 :pagination="{ pageSize: 10 }"
               >
                 <!-- <span slot="range" slot-scope="text, record">
@@ -109,27 +124,40 @@
         </a-col>
         <!--  -->
         <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card :loading="loading" :bordered="false" :title="'机器人预警信息'" :style="{ height: '100%' }">
+          <a-card
+            :loading="loading"
+            :bordered="false"
+            :title="'机器人预警信息'"
+            :style="{ height: '100%' }"
+          >
             <div class="ant-table-wrapper">
               <a-table
-                :row-key="(record, inx) => { return inx }"
+                :row-key="
+                  (record, inx) => {
+                    return inx;
+                  }
+                "
                 size="small"
                 :columns="warningRobotTable.columns"
-                :dataSource="warningRobotTable.source.map((record, index) => ({ ...record, key: index }))"
+                :dataSource="
+                  warningRobotTable.source.map((record, index) => ({
+                    ...record,
+                    key: index,
+                  }))
+                "
                 :pagination="{ pageSize: 10 }"
               >
               </a-table>
             </div>
           </a-card>
         </a-col>
-       
       </a-row>
     </div>
   </div>
 </template>
 
 <script>
-import { getStatistics, getCpuInfo, warningTrad, warningRobot } from '@/api/manage'
+import { getStatistics, getCpuInfo, warningTrad, warningRobot } from "@/api/manage";
 import {
   ChartCard,
   MiniArea,
@@ -138,30 +166,30 @@ import {
   Bar,
   Trend,
   NumberInfo,
-  MiniSmoothArea
-} from '@/components'
-import { baseMixin } from '@/store/app-mixin'
+  MiniSmoothArea,
+} from "@/components";
+import { baseMixin } from "@/store/app-mixin";
 
-const searchData = []
+const searchData = [];
 for (let i = 0; i < 50; i += 1) {
   searchData.push({
     index: i + 1,
     keyword: `搜索关键词-${i}`,
     count: Math.floor(Math.random() * 1000),
     range: Math.floor(Math.random() * 100),
-    status: Math.floor((Math.random() * 10) % 2)
-  })
+    status: Math.floor((Math.random() * 10) % 2),
+  });
 }
 const dateFilter = (date) => {
   if (date < 10) {
-    return '0' + date
+    return "0" + date;
   } else {
-    return date
+    return date;
   }
-}
+};
 
 export default {
-  name: 'Home',
+  name: "Home",
   mixins: [baseMixin],
   components: {
     ChartCard,
@@ -171,143 +199,156 @@ export default {
     Bar,
     Trend,
     NumberInfo,
-    MiniSmoothArea
+    MiniSmoothArea,
   },
-  data () {
+  data() {
     return {
       loading: true,
-      langDateStr: '',
-      langDateSub: '',
+      langDateStr: "",
+      langDateSub: "",
       searchData,
       taskInfo: {
-        realyname: '',
-        coinout: ''
+        realyname: "",
+        coinout: "",
       },
       statisticsInfo: {
-        users: '0',
-        inaccount: '0',
-        outaccount: '0',
-        cpus: '0'
+        users: "0",
+        inaccount: "0",
+        outaccount: "0",
+        cpus: "0",
       },
       warningTradTable: {
         source: [],
         columns: [
-          { title: '会员', dataIndex: 'member', width: 120 },
-          { title: '币种', dataIndex: 'coin', width: 80 },
-          { title: '可用', dataIndex: 'usable', width: 120 },
-          { title: '冻结', dataIndex: 'disable', width: 120 },
-          { title: '其他', dataIndex: 'other', width: 120 }
-        ]
+          { title: "会员", dataIndex: "member", width: 120 },
+          { title: "币种", dataIndex: "coin", width: 80 },
+          { title: "可用", dataIndex: "usable", width: 120 },
+          { title: "冻结", dataIndex: "disable", width: 120 },
+          { title: "其他", dataIndex: "other", width: 120 },
+        ],
       },
       warningRobotTable: {
         source: [],
         columns: [
-          { title: '时间', dataIndex: 'writedate', width: 150 },
-          { title: '信息', dataIndex: 'contents' }
-        ]
+          { title: "时间", dataIndex: "writedate", width: 150 },
+          { title: "信息", dataIndex: "contents" },
+        ],
       },
       pieStyle: {
-        stroke: '#fff',
-        lineWidth: 1
-      }
-    }
+        stroke: "#fff",
+        lineWidth: 1,
+      },
+    };
   },
   computed: {
-    searchTableColumns () {
-      return [{
-        dataIndex: 'index',
-        title: this.$t('dashboard.analysis.table.rank'),
-        width: 90
-      }, {
-        dataIndex: 'keyword',
-        title: this.$t('dashboard.analysis.table.search-keyword')
-      }, {
-        dataIndex: 'count',
-        title: this.$t('dashboard.analysis.table.users')
-      }, {
-        dataIndex: 'range',
-        title: this.$t('dashboard.analysis.table.weekly-range'),
-        align: 'right',
-        sorter: (a, b) => a.range - b.range,
-        scopedSlots: { customRender: 'range' }
-      }]
-    }
+    searchTableColumns() {
+      return [
+        {
+          dataIndex: "index",
+          title: this.$t("dashboard.analysis.table.rank"),
+          width: 90,
+        },
+        {
+          dataIndex: "keyword",
+          title: this.$t("dashboard.analysis.table.search-keyword"),
+        },
+        {
+          dataIndex: "count",
+          title: this.$t("dashboard.analysis.table.users"),
+        },
+        {
+          dataIndex: "range",
+          title: this.$t("dashboard.analysis.table.weekly-range"),
+          align: "right",
+          sorter: (a, b) => a.range - b.range,
+          scopedSlots: { customRender: "range" },
+        },
+      ];
+    },
   },
-  created () {
-    this.getLangDate()
+  created() {
+    this.getLangDate();
   },
-  mounted () {
-    getStatistics()
-      .then(res => {
-        console.log(res)
-        if (res.code === '0') {
-          const {
-            users,
-            inaccount,
-            outaccount,
-            coinout,
-            realyname
-          } = res.data[0] // 取第一条
+  mounted() {
+    // getStatistics()
+    //   .then(res => {
+    //     console.log(res)
+    //     if (res.code === '0') {
+    //       const {
+    //         users,
+    //         inaccount,
+    //         outaccount,
+    //         coinout,
+    //         realyname
+    //       } = res.data[0] // 取第一条
 
-          this.taskInfo.realyname = realyname
-          this.taskInfo.coinout = coinout
-          this.statisticsInfo.users = users
-          this.statisticsInfo.inaccount = inaccount
-          this.statisticsInfo.outaccount = outaccount
-        }
-      })
-    getCpuInfo()
-      .then(res => {
-        console.log(res)
-        if (res.code === '0') {
-          const { cpus } = res.data[0]
-          this.statisticsInfo.cpus = cpus
-        }
-      })
-    warningTrad()
-      .then(res => {
-        if (res.code === 0) {
-          this.warningTradTable.source = res.data
-        }
-      })
-    warningRobot()
-      .then(res => {
-        if (res.code === 0) {
-          this.warningRobotTable.source = res.data
-        }
-      })
+    //       this.taskInfo.realyname = realyname
+    //       this.taskInfo.coinout = coinout
+    //       this.statisticsInfo.users = users
+    //       this.statisticsInfo.inaccount = inaccount
+    //       this.statisticsInfo.outaccount = outaccount
+    //     }
+    //   })
+    // getCpuInfo()
+    //   .then(res => {
+    //     console.log(res)
+    //     if (res.code === '0') {
+    //       const { cpus } = res.data[0]
+    //       this.statisticsInfo.cpus = cpus
+    //     }
+    //   })
+    warningTrad().then((res) => {
+      if (res.code === 0) {
+        this.warningTradTable.source = res.data;
+      }
+    });
+    warningRobot().then((res) => {
+      if (res.code === 0) {
+        this.warningRobotTable.source = res.data;
+      }
+    });
     this.$nextTick(() => {
       setTimeout(() => {
-        this.loading = !this.loading
-      }, 1000)
-    })
+        this.loading = !this.loading;
+      }, 1000);
+    });
   },
   methods: {
-    getLangDate () {
-      const ts = this
+    getLangDate() {
+      const ts = this;
       // setTimeout('getLangDate()',1000) ${timeValue}
-      this.langDateStr = `你好！ 欢迎使用后台管理系统。`
+      this.langDateStr = `你好！ 欢迎使用后台管理系统。`;
       // this.langDateSub = `当前时间为：${newDate} ${week}`
 
       setInterval(function () {
-        const dateObj = new Date() // 表示当前系统时间的Date对象
-        const year = dateObj.getFullYear()
-        const month = dateObj.getMonth() + 1
-        const date = dateObj.getDate()
-        const day = dateObj.getDay()
-        const weeks = [ '星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六' ]
-        const week = weeks[day] // 根据星期值，从数组中获取对应的星期字符串
-        const hour = dateObj.getHours()
-        const minute = dateObj.getMinutes()
-        const second = dateObj.getSeconds()
-        const timeValue = '' + ((hour >= 12) ? (hour >= 18) ? '晚上' : '下午' : '上午') // 当前时间属于上午、晚上还是下午
-        const newDate = `${year}年${dateFilter(month)}月${dateFilter(date)}日 ${dateFilter(hour)}:${dateFilter(minute)}:${dateFilter(second)}`
+        const dateObj = new Date(); // 表示当前系统时间的Date对象
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth() + 1;
+        const date = dateObj.getDate();
+        const day = dateObj.getDay();
+        const weeks = [
+          "星期日",
+          "星期一",
+          "星期二",
+          "星期三",
+          "星期四",
+          "星期五",
+          "星期六",
+        ];
+        const week = weeks[day]; // 根据星期值，从数组中获取对应的星期字符串
+        const hour = dateObj.getHours();
+        const minute = dateObj.getMinutes();
+        const second = dateObj.getSeconds();
+        const timeValue = "" + (hour >= 12 ? (hour >= 18 ? "晚上" : "下午") : "上午"); // 当前时间属于上午、晚上还是下午
+        const newDate = `${year}年${dateFilter(month)}月${dateFilter(
+          date
+        )}日 ${dateFilter(hour)}:${dateFilter(minute)}:${dateFilter(second)}`;
 
-        ts.langDateSub = `当前时间为：${newDate} ${timeValue} ${week}`
-      }, 1000)
-    }
-  }
-}
+        ts.langDateSub = `当前时间为：${newDate} ${timeValue} ${week}`;
+      }, 1000);
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -346,9 +387,9 @@ export default {
 .dashboard-analysis-iconGroup {
   i {
     margin-left: 16px;
-    color: rgba(0,0,0,.45);
+    color: rgba(0, 0, 0, 0.45);
     cursor: pointer;
-    transition: color .32s;
+    transition: color 0.32s;
     color: black;
   }
 }

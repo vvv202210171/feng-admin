@@ -5,7 +5,6 @@ import {
   // getInfo,
   logout
 } from '@/api/login'
-import { getCurrencyList } from '@/api/systemsetting'
 import { getMenus, getMenus2 } from '@/api/manage'
 import { ACCESS_TOKEN, USER_NAME } from '@/store/mutation-types'
 import { setCookies, removeCookies } from '@/utils/auth'

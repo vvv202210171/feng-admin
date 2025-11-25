@@ -11,7 +11,7 @@ const api = {
   getMenu: '/cmsapi/getmenu',
   getMenu2: '/cmsapi/getmenu2',
   // newsList: '/webcms/json/newsList.json',
-  getWithdrawalAndDeposit: '/cmsapi/deposit_withdrawal_statistics',
+  getWithdrawalAndDeposit: '/cmsapi/statistics/deposit_withdrawal',
   getStatistics: '/cmsapi/statistics',
   getCpuInfo: '/cmsapi/getcpu_info',
   warningTrad: '/cmsapi/warning_trad',

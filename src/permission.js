@@ -25,11 +25,7 @@ router.beforeEach((to, from, next) => {
       next({ path: defaultRoutePath })
       NProgress.done()
     } else {
-      // console.log(store.getters.currencylist)
-      if (store.getters.currencylist.length === 0) {
-        // 获取全币种，保存在store里
-        store.dispatch('GetCurrency')
-      }
+
       // check login user.roles is null
       if (store.getters.roles.length === 0) {
         // request login userInfo

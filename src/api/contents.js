@@ -11,44 +11,11 @@ const api = {
   questedit: '/cmsapi/editquest',
   questdel: '/cmsapi/removequest',
   questadd: '/cmsapi/addquest',
-  //news
-  pageListNews: '/cmsapi/news/page',
-  delNews: '/cmsapi/news/del',
-  addNews: '/cmsapi/news/add',
-  editNews: '/cmsapi/news/update'
+
 }
 
 export default api
 
-export function getNewsList(params) {
-  return request({
-    url: api.pageListNews,
-    method: 'get',
-    params
-  })
-}
-export function delNews(params) {
-  return request({
-    url: api.delNews,
-    method: 'get',
-    params
-  })
-}
-export function addNews(data) {
-  return request({
-    url: api.addNews,
-    method: 'post',
-    data
-  })
-}
-export function editNews(data) {
-
-  return request({
-    url: api.editNews,
-        method: 'post',
-        data
-  })
-}
 
 // banners api
 export function getBannerList(params) {

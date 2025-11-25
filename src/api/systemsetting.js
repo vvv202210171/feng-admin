@@ -271,25 +271,7 @@ export function getcurrencyTypeList() {
     method: 'get'
   })
 }
-// 币种管理api
-export function getCurrencyList(parameter) {
-  let { page, pageSize } = parameter
-  const { key, startdate, enddate } = parameter
-  if (!page) {
-    page = 1
-  }
-  if (!pageSize) {
-    pageSize = 20
-  }
-  const params = `?page=${page}&limit=${pageSize}${key ? '&key=' + key : ''}${
-    startdate ? '&startdate=' + startdate : ''
-  }${enddate ? '&enddate=' + enddate : ''}`
-  return request({
-    url: api.currencyList + params,
-    method: 'get'
-    // data: parameter
-  })
-}
+
 export function addCurrency(data) {
   return request({
     url: api.currencyAdd,

@@ -17,6 +17,9 @@ function hasRole(roles, route) {
   }
 }
 function hasPermission(permission, route) {
+  if(!route){
+    return false;
+  }
   if (route.meta && route.meta.permission) {
     if (permission === undefined) {
       return false
