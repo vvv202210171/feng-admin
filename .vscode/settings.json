@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "octref.vetur", // 或其他格式化器
+  "[vue]": {
+    "editor.defaultFormatter": "Wscats.vue" // 覆盖 Vue 文件的默认格式化器
+  },
+  "vetur.format.defaultFormatterOptions": {
+    "js-beautify-html": {
+      "wrap_attributes": "force-expand-multiline"
+    },
+    "prettyhtml": {
+      "printWidth": 80, // 你可以根据工作区需求更改这些选项
+      "singleQuote": true,
+      "wrapAttributes": false,
+      "sortAttributes": true
+    }
+  },
+  "i18n-ally.localesPaths": [
+    "src/i18n"
+  ],
+  "vue-i18n.i18nPaths": "src\\locales,src\\locales\\lang"
+}
