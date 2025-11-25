@@ -3,19 +3,9 @@
     <a-card :bordered="false">
       <!-- :model="queryParam" -->
 
-      <a-form
-        name="Search"
-        layout="inline"
-        autocomplete="off"
-        style="margin-bottom: 14px"
-        @submit="doSearch"
-      >
+      <a-form name="Search" layout="inline" autocomplete="off" style="margin-bottom: 14px" @submit="doSearch">
         <a-form-item label="搜索内容">
-          <a-input
-            style="width: 240px"
-            v-model="queryParam.key"
-            placeholder="请输入要搜索的内容"
-          >
+          <a-input style="width: 240px" v-model="queryParam.key" placeholder="请输入要搜索的内容">
           </a-input>
         </a-form-item>
         <a-form-item label="类型">
@@ -42,37 +32,17 @@
           </a-select>
         </a-form-item>
         <a-form-item label="时间">
-          <a-date-picker
-            v-model="queryParam.startdate"
-            @change="startChange"
-          />~<a-date-picker v-model="queryParam.enddate" @change="endChange" />
+          <a-date-picker v-model="queryParam.startdate" @change="startChange" />~<a-date-picker
+            v-model="queryParam.enddate" @change="endChange" />
         </a-form-item>
         <a-form-item>
-          <a-button
-            htmlType="submit"
-            :disabled="disabledSearch"
-            type="primary"
-            @click="doSearch"
-            >查询</a-button
-          >
+          <a-button htmlType="submit" :disabled="disabledSearch" type="primary" @click="doSearch">查询</a-button>
         </a-form-item>
-        <a-button type="primary" icon="plus" @click="handleAdd" style="float: right"
-          >新增虚拟账户</a-button
-        >
+        <a-button type="primary" icon="plus" @click="handleAdd" style="float: right">新增虚拟账户</a-button>
       </a-form>
 
-      <a-table
-        ref="table"
-        size="default"
-        row-key="autoid"
-        :loading="loading"
-        :scroll="{ x: 980 }"
-        bordered
-        :columns="filterColumn"
-        :dataSource="loadData"
-        :pagination="pagination"
-        expandRowByClick
-      >
+      <a-table ref="table" size="default" row-key="autoid" :loading="loading" :scroll="{ x: 980 }" bordered
+        :columns="filterColumn" :dataSource="loadData" :pagination="pagination" expandRowByClick>
         <template slot="state" slot-scope="text, record">
           <span v-if="record.state === 'enable'">启用</span>
           <span v-if="record.state === 'disable'" style="color: #eb1345">冻结</span>
@@ -90,25 +60,17 @@
 
         <template slot="cycleState" slot-scope="text, record">
           <span v-if="record.cycleState === 'enable'">正常</span>
-          <span v-else-if="record.cycleState === 'profit'" style="color: #00d20d"
-            >必赢</span
-          >
-          <span v-else-if="record.cycleState === 'loss'" style="color: #eb1345"
-            >必输</span
-          >
+          <span v-else-if="record.cycleState === 'profit'" style="color: #00d20d">必赢</span>
+          <span v-else-if="record.cycleState === 'loss'" style="color: #eb1345">必输</span>
         </template>
         <template slot="flagVirtual" slot-scope="text, record">
           <span v-if="record.flagVirtual === 0">正式会员</span>
-          <span v-else-if="record.flagVirtual === 1" style="color: #00d20d"
-            >虚拟会员</span
-          >
+          <span v-else-if="record.flagVirtual === 1" style="color: #00d20d">虚拟会员</span>
           <span v-else style="color: #eb1345">{{ record.flagVirtual }}</span>
         </template>
         <template slot="idcardstate" slot-scope="text, record">
           <span v-if="record.idcardstate === 'no'" style="color: #eb1345">未认证</span>
-          <span v-else-if="record.idcardstate === 'review'" style="color: rgb(255 128 36)"
-            >待审核</span
-          >
+          <span v-else-if="record.idcardstate === 'review'" style="color: rgb(255 128 36)">待审核</span>
           <span v-else-if="record.idcardstate === 'completed'">已完成</span>
           <span v-else>已驳回</span>
         </template>
@@ -124,21 +86,13 @@
         </template>
 
         <template slot="flagWithdraw" slot-scope="text, record">
-          <a-switch
-            checked-children="启用"
-            un-checked-children="关闭"
-            :checked="record.flagWithdraw == 1"
-            @change="(value) => onChangeFlagWithdraw(value, record)"
-          />
+          <a-switch checked-children="启用" un-checked-children="关闭" :checked="record.flagWithdraw == 1"
+            @change="(value) => onChangeFlagWithdraw(value, record)" />
         </template>
 
         <template slot="flagOrder" slot-scope="text, record">
-          <a-switch
-            checked-children="启用"
-            un-checked-children="关闭"
-            :checked="record.flagOrder == 1"
-            @change="(value) => onChangeFlagOrder(value, record)"
-          />
+          <a-switch checked-children="启用" un-checked-children="关闭" :checked="record.flagOrder == 1"
+            @change="(value) => onChangeFlagOrder(value, record)" />
         </template>
         <template slot="tel" slot-scope="text, record">
           <template v-if="record.tel && record.tel != '--'">
@@ -148,24 +102,9 @@
             {{ record.tel }}
           </template>
         </template>
-        <template slot="usdtIn" slot-scope="text, record">
-          <span>
-            <p style="line-height: 0; color: #0d9488">(本金) {{ record.benjinin }}</p>
-            <p style="line-height: 20px; color: #f97316">(优惠) {{ record.youhuiin }}</p>
-            <p style="line-height: 0; color: #1e293b">(合计) {{ record.usdtIn }}</p>
-          </span>
-        </template>
-        <template slot="usdtOut" slot-scope="text, record">
-          <span>
-            <p style="line-height: 0; color: #0d9488">(本金) {{ record.benjinout }}</p>
-            <p style="line-height: 20px; color: #f97316">(优惠) {{ record.youhuiout }}</p>
-            <p style="line-height: 0; color: #1e293b">(合计) {{ record.usdtOut }}</p>
-          </span>
-        </template>
+
         <span slot="action" slot-scope="text, record">
-          <div
-            style="display: flex; flex-direction: column; align-items: center; gap: 4px"
-          >
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
             <a-button type="link" @click="updateAaasets(record)"> 资产详情 </a-button>
             <template v-if="record.autoid !== 1">
               <a-dropdown>
@@ -174,9 +113,7 @@
                 </a>
                 <a-menu slot="overlay">
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a @click="handleEditParent(record)" :disabled="!$verify('101012')"
-                      >领导人</a
-                    >
+                    <a @click="handleEditParent(record)" :disabled="!$verify('101012')">领导人</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
                     <a @click="handleEdit(record)" :disabled="!$verify('101013')">编辑</a>
@@ -185,31 +122,19 @@
                   <a @click="handleReset(record)" :disabled="!$verify('101013')">重置登录密码</a>
                 </a-menu-item> -->
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a @click="handleEditLoginPwd(record)" :disabled="!$verify('101013')"
-                      >修改登录密码</a
-                    >
+                    <a @click="handleEditLoginPwd(record)" :disabled="!$verify('101013')">修改登录密码</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a @click="handleEditTradPwd(record)" :disabled="!$verify('101013')"
-                      >修改交易密码</a
-                    >
+                    <a @click="handleEditTradPwd(record)" :disabled="!$verify('101013')">修改交易密码</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a @click="handleFreeze(record)" :disabled="record.state == 'disable'"
-                      >冻结用户</a
-                    >
+                    <a @click="handleFreeze(record)" :disabled="record.state == 'disable'">冻结用户</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a @click="handleFreeze(record)" :disabled="record.state == 'enable'"
-                      >启用用户</a
-                    >
+                    <a @click="handleFreeze(record)" :disabled="record.state == 'enable'">启用用户</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
-                    <a
-                      @click="handleResetRealName(record)"
-                      :disabled="record.idcardstate == 'no'"
-                      >重置实名</a
-                    >
+                    <a @click="handleResetRealName(record)" :disabled="record.idcardstate == 'no'">重置实名</a>
                   </a-menu-item>
                   <a-menu-item v-if="record.autoid !== 1">
                     <a @click="handleFreezeLine(record, 'disable')">冻结用户线</a>
@@ -236,51 +161,32 @@
         </span>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
           <a-card title="用户详情">
-            <a-card-grid
-              style="width: 16.6666%; line-height: 10px"
-              v-for="(key, index) in columns2"
-              :key="index"
-            >
+            <a-card-grid style="width: 16.6666%; line-height: 10px" v-for="(key, index) in columns2" :key="index">
               <template v-if="key.dataIndex == 'state'">
-                <span>{{ key.title }}</span
-                >:
+                <span>{{ key.title }}</span>:
                 <span v-if="record.state === 'enable'">启用</span>
                 <span v-if="record.state === 'disable'" style="color: #eb1345">冻结</span>
               </template>
               <template v-else-if="key.dataIndex == 'superuser'">
-                <span>{{ key.title }}</span
-                >:
+                <span>{{ key.title }}</span>:
                 <span v-if="record.superuser === 'disable'">用户</span>
-                <span v-if="record.superuser === 'enable'" style="color: #eb1345"
-                  >代理</span
-                >
+                <span v-if="record.superuser === 'enable'" style="color: #eb1345">代理</span>
               </template>
               <template v-else-if="key.dataIndex == 'minerState'">
-                <span>{{ key.title }}</span
-                >:
+                <span>{{ key.title }}</span>:
                 <span v-if="record.minerState === 'disable'">关</span>
-                <span v-if="record.minerState === 'enable'" style="color: #00d20d"
-                  >开</span
-                >
+                <span v-if="record.minerState === 'enable'" style="color: #00d20d">开</span>
               </template>
               <template v-else-if="key.dataIndex == 'cycleState'">
-                <span>{{ key.title }}</span
-                >:
+                <span>{{ key.title }}</span>:
                 <span v-if="record.cycleState === 'enable'">正常</span>
-                <span v-else-if="record.cycleState === 'profit'" style="color: #00d20d"
-                  >必赢</span
-                >
-                <span v-else-if="record.cycleState === 'loss'" style="color: #eb1345"
-                  >必输</span
-                >
+                <span v-else-if="record.cycleState === 'profit'" style="color: #00d20d">必赢</span>
+                <span v-else-if="record.cycleState === 'loss'" style="color: #eb1345">必输</span>
               </template>
               <template v-else-if="key.dataIndex == 'idcardstate'">
-                <span>{{ key.title }}</span
-                >:
+                <span>{{ key.title }}</span>:
                 <span v-if="record.idcardstate === 'no'">未认证</span>
-                <span v-else-if="record.idcardstate === 'review'" style="color: #eb1345"
-                  >待审核</span
-                >
+                <span v-else-if="record.idcardstate === 'review'" style="color: #eb1345">待审核</span>
                 <span v-else-if="record.idcardstate === 'completed'">已完成</span>
                 <span v-else>已驳回</span>
               </template>
@@ -310,94 +216,33 @@
               </template>
 
               <template v-else>
-                <span>{{ key.title }}</span
-                >:<span>{{ record[key.dataIndex] }}</span>
+                <span>{{ key.title }}</span>:<span>{{ record[key.dataIndex] }}</span>
               </template>
             </a-card-grid>
           </a-card>
         </p>
       </a-table>
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :roles="roleMenus"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <s-modal
-        ref="memberParentModal"
-        :config="{ title: '编辑领导人' }"
-        :visible="parentVisible"
-        :loading="parentConfirmLoading"
-        :options="parentOptions"
-        :model="parentMdl"
-        @cancel="handleParentCancel"
-        @ok="handleParentOk"
-      />
-      <s-modal
-        ref="memberEditTradPwdModal"
-        :config="{ title: '修改交易密码' }"
-        :visible="editTradPwdMdlVisible"
-        :loading="editTradPwdConfirmLoading"
-        :options="editTradPwdOptions"
-        :model="editTradPwdMdl"
-        @cancel="handleTradEditPwdCancel"
-        @ok="handleTradEditPwdOk"
-      />
-      <s-modal
-        ref="memberEditLoginPwdModal"
-        :config="{ title: '修改登录密码' }"
-        :visible="editLoginPwdMdlVisible"
-        :loading="editTradPwdConfirmLoading"
-        :options="editLoginPwdOptions"
-        :model="editLoginPwdMdl"
-        @cancel="handleLoginEditPwdCancel"
-        @ok="handleLoginEditPwdOk"
-      />
-      <s-modal
-        ref="addVirtualModal"
-        :config="{ title: '新增虚拟账户' }"
-        :visible="addVirtualOptionsVisible"
-        :options="addVirtualOptions"
-        :model="addVirtualMdl"
-        @cancel="handleVirtualCancel"
-        @ok="handleVirtualOk"
-      />
-      <s-modal
-        ref="rechargelModal"
-        :config="{ title: '手动充值' }"
-        :visible="rechargOptionsVisible"
-        :options="recharglOptions"
-        :model="rechargMdl"
-        @cancel="handlRerechargCancel"
-        @ok="handleRecharglOk"
-      />
-      <s-modal
-        ref="withrawlModal"
-        :config="{ title: '手动扣款' }"
-        :visible="withdrawOptionsVisible"
-        :options="withdrawlOptions"
-        :model="withdrawMdl"
-        @cancel="handlWithrawCancel"
-        @ok="handleWithdrawOk"
-      />
+      <create-form ref="createModal" :visible="visible" :loading="confirmLoading" :roles="roleMenus" :model="mdl"
+        @cancel="handleCancel" @ok="handleOk" />
+      <s-modal ref="memberParentModal" :config="{ title: '编辑领导人' }" :visible="parentVisible"
+        :loading="parentConfirmLoading" :options="parentOptions" :model="parentMdl" @cancel="handleParentCancel"
+        @ok="handleParentOk" />
+      <s-modal ref="memberEditTradPwdModal" :config="{ title: '修改交易密码' }" :visible="editTradPwdMdlVisible"
+        :loading="editTradPwdConfirmLoading" :options="editTradPwdOptions" :model="editTradPwdMdl"
+        @cancel="handleTradEditPwdCancel" @ok="handleTradEditPwdOk" />
+      <s-modal ref="memberEditLoginPwdModal" :config="{ title: '修改登录密码' }" :visible="editLoginPwdMdlVisible"
+        :loading="editTradPwdConfirmLoading" :options="editLoginPwdOptions" :model="editLoginPwdMdl"
+        @cancel="handleLoginEditPwdCancel" @ok="handleLoginEditPwdOk" />
+      <s-modal ref="addVirtualModal" :config="{ title: '新增虚拟账户' }" :visible="addVirtualOptionsVisible"
+        :options="addVirtualOptions" :model="addVirtualMdl" @cancel="handleVirtualCancel" @ok="handleVirtualOk" />
+      <s-modal ref="rechargelModal" :config="{ title: '手动充值' }" :visible="rechargOptionsVisible"
+        :options="recharglOptions" :model="rechargMdl" @cancel="handlRerechargCancel" @ok="handleRecharglOk" />
+      <s-modal ref="withrawlModal" :config="{ title: '手动扣款' }" :visible="withdrawOptionsVisible"
+        :options="withdrawlOptions" :model="withdrawMdl" @cancel="handlWithrawCancel" @ok="handleWithdrawOk" />
     </a-card>
-    <member-to-address
-      ref="memberAddressModal"
-      :visible="addressVisible"
-      :member="member"
-      @ok="addressVisible = false"
-      @cancel="addressVisible = false"
-    />
-    <member-to-assets
-      ref="memberAddressModal"
-      :visible="assetsVisible"
-      :dataMem="dataMem"
-      @ok="assetsVisible = false"
-      @cancel="assetsVisible = false"
-    />
+    <member-to-address ref="memberAddressModal" :visible="addressVisible" :member="member" @ok="addressVisible = false"
+      @cancel="addressVisible = false" />
+
   </page-header-wrapper>
 </template>
 
@@ -417,13 +262,11 @@ import {
   sendFlagOrder,
   addVirtual,
 } from "@/api/members";
-import { addUsaccount } from "@/api/assethub";
 import { Modal } from "ant-design-vue";
 
 // import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from "./modules/MemberListForm";
 import MemberToAddress from "./modules/MemberToAddress";
-import MemberToAssets from "./modules/MemberToAssets";
 
 const columns = [
   {
@@ -522,18 +365,7 @@ const columns = [
     width: 100,
     scopedSlots: { customRender: "flagOrder" },
   },
-  {
-    dataIndex: "usdtIn",
-    title: "USDT总入款",
-    width: 150,
-    scopedSlots: { customRender: "usdtIn" },
-  },
-  {
-    dataIndex: "usdtOut",
-    title: "USDT总出款",
-    width: 150,
-    scopedSlots: { customRender: "usdtOut" },
-  },
+
   {
     dataIndex: "remark",
     title: "备注",
@@ -908,7 +740,6 @@ export default {
     MemberToAddress,
     SModal,
     MemberToAddress,
-    MemberToAssets,
     // StepByStepModal
   },
   data() {
@@ -1072,21 +903,7 @@ export default {
       this.rechargOptionsVisible = false;
     },
     handleRecharglOk() {
-      const form = this.$refs.rechargelModal.form;
-      this.editPwdConfirmLoading = true;
-      form.validateFields(async (errors, values) => {
-        values.cate = "benjin";
-        values.type = "add";
-        values.account = "usable";
-        const { code, msg } = await addUsaccount(values);
-        if (code !== 0) {
-          this.$message.error(msg);
-        } else {
-          this.$message.success("充值成功");
-          this.handlRerechargCancel();
-          this.getData();
-        }
-      });
+
     },
     showRechage(record) {
       this.rechargOptionsVisible = true;
@@ -1101,17 +918,7 @@ export default {
       const form = this.$refs.rechargelModal.form;
       this.editPwdConfirmLoading = true;
       form.validateFields(async (errors, values) => {
-        values.cate = "benjin";
-        values.type = "add";
-        values.account = "usable";
-        const { code, msg } = await addUsaccount(values);
-        if (code !== 0) {
-          this.$message.error(msg);
-        } else {
-          this.$message.success("充值成功");
-          this.handlRerechargCancel();
-          this.getData();
-        }
+        this.$message.success("充值成功");
       });
     },
     handleWithdrawOk() {
@@ -1121,14 +928,8 @@ export default {
         values.cate = "benjin";
         values.type = "bank";
         values.account = "usable";
-        const { code, msg } = await addUsaccount(values);
-        if (code !== 0) {
-          this.$message.error(msg);
-        } else {
-          this.$message.success("手动扣款成功");
-          this.handlWithrawCancel();
-          this.getData();
-        }
+        this.$message.success("手动扣款成功");
+
       });
     },
     handlWithrawCancel() {
@@ -1305,7 +1106,7 @@ export default {
             delMod.destroy();
           });
         },
-        onCancel() {},
+        onCancel() { },
       });
     },
     handleResetRealName(record) {
@@ -1324,14 +1125,13 @@ export default {
             delMod.destroy();
           });
         },
-        onCancel() {},
+        onCancel() { },
       });
     },
     handleFreezeLine(record, state) {
       const ts = this;
-      const msg = `确定要${state === "enable" ? "启用" : "冻结"}：${
-        record.member
-      } 整条线吗？`;
+      const msg = `确定要${state === "enable" ? "启用" : "冻结"}：${record.member
+        } 整条线吗？`;
       const delMod = Modal.confirm({
         centered: true,
         maskClosable: true,
@@ -1347,7 +1147,7 @@ export default {
             delMod.destroy();
           });
         },
-        onCancel() {},
+        onCancel() { },
       });
     },
     updateAddress(record) {
@@ -1361,9 +1161,8 @@ export default {
 
     handleFreeze(record) {
       const ts = this;
-      const msg = `确定要${record.state === "enable" ? "冻结" : "启用"}： ${
-        record.member
-      }吗？`;
+      const msg = `确定要${record.state === "enable" ? "冻结" : "启用"}： ${record.member
+        }吗？`;
       const delMod = Modal.confirm({
         centered: true,
         maskClosable: true,
@@ -1379,7 +1178,7 @@ export default {
             delMod.destroy();
           });
         },
-        onCancel() {},
+        onCancel() { },
       });
     },
     handleOk() {

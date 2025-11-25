@@ -6,48 +6,7 @@ const RouteView = {
   name: 'RouteView',
   render: (h) => h('router-view')
 }
-// 路由接口配置（id转换）
-// const changePermissionIdByID = (menuid) => {
-//   let permissionId = ''
-//   switch (menuid) {
-//     case '101': // '用户管理'
-//       permissionId = 'members'
-//       break
-//     case '102': // '内容管理'
-//       permissionId = 'contents'
-//       break
-//     case '103': // '币币交易'
-//       permissionId = 'cointransaction'
-//       break
-//     case '104': // '资产中心':
-//       permissionId = 'assetcenter'
-//       break
-//     case '105': // '合约交易':
-//       permissionId = 'contractstrade'
-//       break
-//     case '106': // '周期合约':
-//       permissionId = 'contracts'
-//       break
-//     case '107': // '锁仓挖矿':
-//       permissionId = 'locking'
-//       break
-//     case '108': // '待审核管理':
-//       permissionId = 'auditedmanage'
-//       break
-//     case '109': // '日志管理':
-//       permissionId = 'logmanage'
-//       break
-//     case '110': // '系统设置':
-//       permissionId = 'systemmanage'
-//       break
-//     //
-//     default:
-//       permissionId = ''
-//       break
-//   }
-//   return permissionId
-// }
-// console.log(changePermissionIdByID('101'))
+
 
 // 静态同步路由
 export const asyncRouterMap = [
@@ -75,7 +34,56 @@ export const asyncRouterMap = [
           }
         ]
       },
-
+      // 用户管理
+      {
+        menuid: '101',
+        path: '/members',
+        name: 'members',
+        component: RouteView,
+        redirect: '/members/memberlist',
+        meta: { title: '用户管理', icon: 'user', permission: ['Members', '101'] },
+        children:[ 
+          {
+            menuid: '101001',
+            path: '/members/memberonlinelist/:pageNo([1-9]\\d*)?',
+            name: 'MemberTableList',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/memberlist/MemberList'),
+            meta: { title: '用户列表', keepAlive: true, permission: ['Members', '101001'] }
+          },
+          {
+            menuid: '101005',
+            path: '/members/memberlist/:pageNo([1-9]\\d*)?',
+            name: 'MemberOnlineList',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/memberlist/MemberOnlineList'),
+            meta: { title: '在线用户', keepAlive: true, permission: ['Members', '101005'] }
+          },
+          {
+            menuid: '101003',
+            path: '/members/orderlist',
+            name: 'MemberOrderList',
+            component: () => import('@/views/memberlist/OrderList'),
+            meta: { title: '工单列表', permission: ['Members', '101003'] }
+          },
+          {
+            menuid: '101004',
+            path: '/members/orderreply/:pageNo([1-9]\\d*)?',
+            name: 'MemberReplyList',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/memberlist/OrderReply'),
+            meta: { title: '待回复工单', keepAlive: true, permission: ['Members', '101004'] }
+          },
+          {
+            menuid: '101006',
+            path: '/members/userback/:pageNo([1-9]\\d*)?',
+            name: 'MemberBalck',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/memberlist/MemberBalck'),
+            meta: { title: '用户IP黑名单', keepAlive: true, permission: ['Members', '101006'] }
+          }
+    ]
+      },
       // 待审核管理
       {
         menuid: '112',
@@ -258,7 +266,6 @@ export const asyncRouterMap = [
           }
         ]
       },
-
       // 报表管理<DollarCircleOutlined />
       {
         menuid: '150',
@@ -275,13 +282,7 @@ export const asyncRouterMap = [
             component: () => import('@/views/report/MemberCount'),
             meta: { title: '会员统计', keepAlive: true, permission: ['Members', '101002'] }
           },
-          {
-            menuid: '150001',
-            path: '/funds/coinReport/:pageNo([1-9]\\d*)?',
-            name: 'coinReport',
-            component: () => import('@/views/report/AssetsStatic.vue'),
-            meta: { title: '币种资产统计', keepAlive: false, permission: ['SystemSetting', '140001'] }
-          },
+
       
         ]
       },
