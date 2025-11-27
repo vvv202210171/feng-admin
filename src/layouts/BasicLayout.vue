@@ -1,14 +1,6 @@
 <template>
-  <pro-layout
-    :menus="menus"
-    :collapsed="collapsed"
-    :mediaQuery="query"
-    :isMobile="isMobile"
-    :handleMediaQuery="handleMediaQuery"
-    :handleCollapse="handleCollapse"
-    :i18nRender="i18nRender"
-    v-bind="settings"
-  >
+  <pro-layout :menus="menus" :collapsed="collapsed" :mediaQuery="query" :isMobile="isMobile"
+    :handleMediaQuery="handleMediaQuery" :handleCollapse="handleCollapse" :i18nRender="i18nRender" v-bind="settings">
     <!-- Ads begin
       广告代码 真实项目中请移除
       production remove this Ads
@@ -19,22 +11,21 @@
     <!-- 1.0.0+ 版本 pro-layout 提供 API，
           我们推荐使用这种方式进行 LOGO 和 title 自定义
     -->
+
+
     <template v-slot:menuHeaderRender>
       <div>
         <img src="~@/assets/face.jpg" />
         <h1>{{ title }}</h1>
       </div>
     </template>
-    <setting-drawer v-if="isDev" :settings="settings" @change="handleSettingChange">
+
+    <!-- <setting-drawer v-if="isDev" :settings="settings" @change="handleSettingChange">
       <div style="margin: 12px 0">This is SettingDrawer custom footer content.</div>
-    </setting-drawer>
+    </setting-drawer> -->
     <template v-slot:rightContentRender>
-      <span>{{ offsetCurrentTime }}</span>
-      <right-content
-        :top-menu="settings.layout === 'topmenu'"
-        :is-mobile="isMobile"
-        :theme="settings.theme"
-      />
+
+      <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
     </template>
     <router-view />
   </pro-layout>
@@ -54,7 +45,6 @@ import defaultSettings from "@/config/defaultSettings";
 import RightContent from "@/components/GlobalHeader/RightContent";
 import GlobalFooter from "@/components/GlobalFooter";
 import Ads from "@/components/Other/CarbonAds";
-
 export default {
   name: "BasicLayout",
   components: {
@@ -65,7 +55,6 @@ export default {
   },
   data() {
     return {
-      offsetCurrentTime: "",
       // preview.pro.antdv.com only use.
       isProPreviewSite:
         process.env.VUE_APP_PREVIEW === "true" && process.env.NODE_ENV !== "development",
@@ -123,10 +112,7 @@ export default {
     });
   },
   mounted() {
-    setInterval(() => {
-      const timeZone = parseInt(sessionStorage.getItem("timeZone")) || -4;
-      this.formatDateByOffset(timeZone);
-    }, 1000);
+
     const userAgent = navigator.userAgent;
     if (userAgent.indexOf("Edge") > -1) {
       this.$nextTick(() => {
@@ -158,26 +144,6 @@ export default {
 
         return true;
       });
-    },
-
-    formatDateByOffset(offset) {
-      const now = new Date();
-      // 当前时间的 UTC 毫秒数
-      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-
-      // 加上偏移量（offset 单位：小时）
-      const targetDate = new Date(utc + 3600000 * offset);
-
-      // 格式化 YYYY-MM-DD HH:mm:ss
-      const yyyy = targetDate.getFullYear();
-      const mm = String(targetDate.getMonth() + 1).padStart(2, "0");
-      const dd = String(targetDate.getDate()).padStart(2, "0");
-      const hh = String(targetDate.getHours()).padStart(2, "0");
-      const min = String(targetDate.getMinutes()).padStart(2, "0");
-      const ss = String(targetDate.getSeconds()).padStart(2, "0");
-      this.offsetCurrentTime = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss} (UTC${
-        offset > 0 ? "+" : ""
-      }${offset})`;
     },
 
     i18nRender,

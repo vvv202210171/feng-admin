@@ -24,7 +24,7 @@ export default {
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true',
-  layout: 'sidemenu',
+  layout: 'topmenu',
   contentWidth: 'Fluid',
 
   primaryColor: '#1890FF',

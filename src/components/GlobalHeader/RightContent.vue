@@ -1,19 +1,16 @@
 <template>
   <div :class="wrpCls">
     <a-space :size="8">
+      <span>{{ offsetCurrentTime }}</span>
       <a-switch checked-children="白天" un-checked-children="黑夜" v-model="isDark" @change="themeChange" />
       <a-button type="link" block @click="topage('/examine/coininlist')" class="btn-pad"> 存款:{{ inCount }} </a-button>
       <a-button type="link" @click="topage('/examine/coinoutlist')" block class="btn-pad">
-        取款:{{ outCount }}</a-button
-      >
+        取款:{{ outCount }}</a-button>
       <a-button type="link" @click="topage('/examine/realyname')" class="btn-pad">待审核:{{ reviewCount }}</a-button>
     </a-space>
     <span @click="toggleMute">
-      <img
-        :src="isMuted ? require('/src/assets/icon_nosound.png') : require('/src/assets/icon_sound.png')"
-        alt="Speaker"
-        style="height: 12px; margin-left: 10px; cursor: pointer; filter: invert(0%)"
-      />
+      <img :src="isMuted ? require('/src/assets/icon_nosound.png') : require('/src/assets/icon_sound.png')"
+        alt="Speaker" style="height: 12px; margin-left: 10px; cursor: pointer; filter: invert(0%)" />
     </span>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" />-->
@@ -54,6 +51,8 @@ export default {
     return {
       showMenu: true,
       currentUser: {},
+      offsetCurrentTime: "",
+
       inCount: 0,
       outCount: 0,
       isDark: false,
@@ -65,8 +64,31 @@ export default {
   created() {
     this.isDark = getThemeDark()
     setIsDark(this.isDark) // 确保首次挂载时设置 data-theme
+    setInterval(() => {
+      const timeZone = parseInt(sessionStorage.getItem("timeZone")) || -4;
+      this.formatDateByOffset(timeZone);
+    }, 1000);
   },
   methods: {
+    formatDateByOffset(offset) {
+      const now = new Date();
+      // 当前时间的 UTC 毫秒数
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+
+      // 加上偏移量（offset 单位：小时）
+      const targetDate = new Date(utc + 3600000 * offset);
+
+      // 格式化 YYYY-MM-DD HH:mm:ss
+      const yyyy = targetDate.getFullYear();
+      const mm = String(targetDate.getMonth() + 1).padStart(2, "0");
+      const dd = String(targetDate.getDate()).padStart(2, "0");
+      const hh = String(targetDate.getHours()).padStart(2, "0");
+      const min = String(targetDate.getMinutes()).padStart(2, "0");
+      const ss = String(targetDate.getSeconds()).padStart(2, "0");
+      this.offsetCurrentTime = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss} (UTC${offset > 0 ? "+" : ""
+        }${offset})`;
+    },
+
     themeChange() {
       setIsDark(this.isDark)
       location.reload()
