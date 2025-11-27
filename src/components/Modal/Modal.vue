@@ -1,151 +1,80 @@
 <template>
-  <a-modal
-    :title="(config && config.title) || ''"
-    :width="width"
-    :visible="visible"
-    :confirm-loading="loading"
-    @ok="
-      () => {
-        $emit('ok');
-      }
-    "
-    @cancel="
-      () => {
-        $emit('cancel');
-      }
-    "
-  >
+  <a-modal :title="(config && config.title) || ''" :width="width" :visible="visible" :confirm-loading="loading" @ok="
+    () => {
+      $emit('ok');
+    }
+  " @cancel="
+    () => {
+      $emit('cancel');
+    }
+  ">
     <a-spin :spinning="loading">
       <a-form :form="form" v-bind="formLayout">
         <a-row>
-          <a-col
-            v-for="(item, inx) in options"
-            :key="inx + '-modal'"
-            :span="item.span || 24"
-          >
+          <a-col v-for="(item, inx) in options" :key="inx + '-modal'" :span="item.span || 24">
             <a-form-item :label="item.title">
               <!-- input -->
-              <a-input
-                v-if="item.type === 'input'"
-                v-decorator="[item.field, item.decorator]"
-                autocomplete="off"
-                :disabled="item.disabled"
-                :placeholder="item.placeholder || ''"
-              />
+              <a-input v-if="item.type === 'input'" v-decorator="[item.field, item.decorator]" autocomplete="off"
+                :disabled="item.disabled" :placeholder="item.placeholder || ''" />
               <!-- input -->
-              <a-input
-                v-if="item.type === 'password'"
-                v-decorator="[item.field, item.decorator]"
-                autocomplete="off"
-                type="password"
-                :disabled="item.disabled"
-                :placeholder="item.placeholder || ''"
-              />
+              <a-input v-if="item.type === 'password'" v-decorator="[item.field, item.decorator]" autocomplete="off"
+                type="password" :disabled="item.disabled" :placeholder="item.placeholder || ''" />
               <!-- number -->
-              <a-input-number
-                v-if="item.type === 'number'"
-                v-decorator="[item.field, item.decorator]"
-                autocomplete="off"
-                :min="item.min"
-                :max="item.max"
-                type="number"
-                style="width: 180px"
-                :placeholder="item.placeholder || ''"
-              />
+              <a-input-number v-if="item.type === 'number'" v-decorator="[item.field, item.decorator]"
+                autocomplete="off" :min="item.min" :max="item.max" type="number" style="width: 180px"
+                :placeholder="item.placeholder || ''" />
               <!-- image -->
               <template v-if="item.type === 'image'">
                 <div style="display: flex">
-                  <a-input
-                    :ref="'uploadImg-' + item.field"
-                    v-decorator="[item.field, item.decorator]"
-                    style="display: none"
-                    autocomplete="off"
-                    disabled
-                    :placeholder="item.placeholder || ''"
-                  />
-                  <a-upload
-                    list-type="text"
-                    :file-list="imgFileList"
-                    accept=".png,.jpg,.jpeg,.xyz,.gif,.com"
-                    :custom-request="(options) => customRequest(options, item)"
-                  >
+                  <a-input :ref="'uploadImg-' + item.field" v-decorator="[item.field, item.decorator]"
+                    style="display: none" autocomplete="off" disabled :placeholder="item.placeholder || ''" />
+                  <a-upload list-type="text" :file-list="imgFileList" accept=".png,.jpg,.jpeg,.xyz,.gif,.com"
+                    :custom-request="(options) => customRequest(options, item)">
                     <a-button> 上传 </a-button>
                   </a-upload>
-                  <div
-                    v-if="model && item.field && model[item.field]"
-                    style="margin-left: 10px"
-                  >
-                    <img
-                      :src="imgUrl(model[item.field])"
-                      style="width: 200px; height: auto; min-height: 80px"
-                    />
+                  <div v-if="model && item.field && model[item.field]" style="margin-left: 10px">
+                    <img :src="imgUrl(model[item.field])" style="width: 200px; height: auto; min-height: 80px" />
                   </div>
                 </div>
               </template>
               <!-- image show -->
               <template v-if="item.type === 'image-show'">
-                <div
-                  v-if="model && item.field && model[item.field]"
-                  style="margin-left: 10px"
-                >
-                  <img
-                    :src="imgUrl(model[item.field])"
-                    style="width: 200px; height: auto; min-height: 80px"
-                  />
+                <div v-if="model && item.field && model[item.field]" style="margin-left: 10px">
+                  <img :src="imgUrl(model[item.field])" style="width: 200px; height: auto; min-height: 80px" />
                 </div>
               </template>
               <!-- textarea -->
-              <a-textarea
-                v-if="item.type === 'textarea'"
-                v-decorator="[item.field, item.decorator]"
-                :rows="item.rows || 4"
-                :placeholder="item.placeholder || ''"
-              />
+              <a-textarea v-if="item.type === 'textarea'" v-decorator="[item.field, item.decorator]"
+                :rows="item.rows || 4" :placeholder="item.placeholder || ''" />
               <!-- select -->
-              <a-select
-                v-if="item.type === 'select'"
-                v-decorator="[item.field, item.decorator]"
-                :show-search="item.search"
-                :placeholder="item.placeholder || ''"
-                :disabled="item.disabled"
-                @search="handleSearch"
-              >
-                <a-select-option
-                  v-for="option in item.options"
-                  :key="option.val"
-                  :value="option.val"
-                >
+              <a-select v-if="item.type === 'select'" v-decorator="[item.field, item.decorator]"
+                :show-search="item.search" :placeholder="item.placeholder || ''" :disabled="item.disabled"
+                @search="handleSearch">
+                <a-select-option v-for="option in item.options" :key="option.val" :value="option.val">
                   {{ option.title }}
                 </a-select-option>
               </a-select>
               <!-- currency select -->
-              <a-select
-                v-if="item.type === 'select-currency'"
-                v-decorator="[item.field, item.decorator]"
-                show-search
-                :disabled="item.disabled"
-                :placeholder="item.placeholder || ''"
-                @search="handleSearch"
-              >
-                <a-select-option
-                  v-for="option in currencyOptions"
-                  v-if="!item.klineType || option.klineType === item.klineType"
-                  :key="option.autoid + '-currency'"
-                  :value="option.coin"
-                >
+              <a-select v-if="item.type === 'select-currency'" v-decorator="[item.field, item.decorator]" show-search
+                :disabled="item.disabled" :placeholder="item.placeholder || ''" @search="handleSearch">
+                <a-select-option v-for="option in currencyOptions"
+                  v-if="!item.klineType || option.klineType === item.klineType" :key="option.autoid + '-currency'"
+                  :value="option.coin">
                   {{ option.coin }}
                 </a-select-option>
               </a-select>
               <!-- currency langs -->
-              <a-select
-                v-if="item.type === 'select-langs'"
-                v-decorator="[item.field, item.decorator]"
-                show-search
-                :disabled="item.disabled"
-                :placeholder="item.placeholder || ''"
-              >
+              <a-select v-if="item.type === 'select-langs'" v-decorator="[item.field, item.decorator]" show-search
+                :disabled="item.disabled" :placeholder="item.placeholder || ''">
                 <a-select-option v-for="k in Object.keys(langs)" :key="k" :value="k">
                   {{ langs[k] }}
+                </a-select-option>
+              </a-select>
+
+              <a-select v-if="item.type === 'select-pay'" v-decorator="[item.field, item.decorator]" show-search
+                :disabled="item.disabled" :placeholder="item.placeholder || ''">
+                <a-select-option v-for="item in enums['PaymentMethod']" :key="item.desc" :value="item.code">
+                  {{ item.desc }}
                 </a-select-option>
               </a-select>
               <!-- timer -->
@@ -153,15 +82,9 @@
             :disabled-date="disabledStartDate"
             @openChange="handleStartOpenChange"
           -->
-              <a-date-picker
-                v-if="item.type === 'timer'"
-                v-decorator="[item.field, item.decorator]"
-                show-time
-                format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="item.placeholder || ''"
-                :disabled-date="disabledDate"
-                @change="handleChange"
-              />
+              <a-date-picker v-if="item.type === 'timer'" v-decorator="[item.field, item.decorator]" show-time
+                format="YYYY-MM-DD HH:mm:ss" :placeholder="item.placeholder || ''" :disabled-date="disabledDate"
+                @change="handleChange" />
               <!-- HH:mm:ss -->
 
               <!-- label -->
@@ -204,7 +127,7 @@ export default {
     },
     config: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
     width: {
       type: Number,

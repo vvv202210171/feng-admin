@@ -283,10 +283,34 @@ export const asyncRouterMap = [
             meta: { title: '会员统计', keepAlive: true, permission: ['Members', '101002'] }
           },
 
-      
         ]
       },
+      //钱包管理
+    {
+        menuid: '201',
+        path: '/wllet',
+        name: 'wllet',
+        component: RouteView,
+        redirect: '/wllet/wllet',
+        meta: { title: '钱包管理', icon: 'bar-chart', permission: ['SystemSetting', '150'] },
+        children: [
+          {
+            menuid: '20101',
+            path: '/wllet/inpay',
+            name: 'InPayWay',
+            component: () => import('@/views/wallet/InPayWay'),
+            meta: { title: '充值方式', keepAlive: true, permission: ['Members', '101002'] }
+          },
+                {
+            menuid: '20101',
+            path: '/report/membercount',
+            name: 'MemberCountList',
+            component: () => import('@/views/report/MemberCount'),
+            meta: { title: '提现方式', keepAlive: true, permission: ['Members', '101002'] }
+          },
 
+        ]
+      },
 
     ]
   },
