@@ -101,7 +101,14 @@ export const asyncRouterMap = [
             component: () => import('@/views/examines/RealyNameList'),
             meta: { title: '实名审核', keepAlive: true, permission: ['112001'] }
           },
-       
+          {
+            menuid: '112002',
+            path: '/examine/recharge/:pageNo([1-9]\\d*)?',
+            name: 'recharge',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/examines/Recharge'),
+            meta: { title: '充值审核', keepAlive: true, permission: ['112002'] }
+          },
         ]
       },
       // 日志管理

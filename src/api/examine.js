@@ -6,6 +6,8 @@ const api = {
   // realynameadd: '/cmsapi/addrealyname',
   realynameedit: '/cmsapi/editrealyname',
   editRealyNameV2: '/cmsapi/editrealyname_v2',
+  recharge:"cmsapi/recharge_audit_list",
+  rechageAudit:"cmsapi/recharge_audit"
 
 }
 
@@ -40,6 +42,23 @@ export function editRealyName(parameter) {
 export function editRealyNameV2(data) {
   return request({
     url: api.editRealyNameV2,
+    method: 'post',
+    data
+  })
+}
+
+export function rechargAuditList(params){
+  return request({
+    url: api.recharge,
+    method: 'get',
+    params
+  })
+}
+
+
+export function rechageAudit(data){
+  return request({
+    url: api.rechageAudit,
     method: 'post',
     data
   })
