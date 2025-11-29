@@ -3,8 +3,8 @@
     <a-space :size="8">
       <span>{{ offsetCurrentTime }}</span>
       <a-switch checked-children="白天" un-checked-children="黑夜" v-model="isDark" @change="themeChange" />
-      <a-button type="link" block @click="topage('/examine/coininlist')" class="btn-pad"> 存款:{{ inCount }} </a-button>
-      <a-button type="link" @click="topage('/examine/coinoutlist')" block class="btn-pad">
+      <a-button type="link" block @click="topage('/examine/recharge')" class="btn-pad"> 存款:{{ inCount }} </a-button>
+      <a-button type="link" @click="topage('/examine/withdraw')" block class="btn-pad">
         取款:{{ outCount }}</a-button>
       <a-button type="link" @click="topage('/examine/realyname')" class="btn-pad">待审核:{{ reviewCount }}</a-button>
     </a-space>
