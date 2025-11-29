@@ -78,12 +78,10 @@
 <script>
 import { STable, Ellipsis, SModal } from '@/components'
 import {
-  // getRoleList,
-  rechargAuditList,
-  // delRealyName,
-  // addRealyName,
-  editRealyName,
-  rechageAudit
+
+  withrawAuditList,
+
+  withrawAudit
 } from '@/api/examine'
 // import { Modal } from 'ant-design-vue'
 
@@ -123,7 +121,7 @@ const columns = [
   },
   {
     dataIndex: 'paymentMethod',
-    title: '支付方式',
+    title: '提现方式',
     width: 100,
     scopedSlots: { customRender: 'paymentMethod' }
   },
@@ -272,7 +270,7 @@ export default {
       const _this = this;
       this.$confirm({
         "title": "您确定要通过吗？" + record.transactionNumber, async onOk() {
-          const ret = await rechageAudit({
+          const ret = await withrawAudit({
             id: record.id, oper: "pass"
           });
           if (ret.code == 0) {
@@ -308,7 +306,7 @@ export default {
       this.confirmLoading = true
       form.validateFields(async (errors, values) => {
         if (!errors) {
-          const ret = await rechageAudit({ reason: values.reason, id: values.id, oper: "reject" })
+          const ret = await withrawAudit({ reason: values.reason, id: values.id, oper: "reject" })
           if (ret.code == 0) {
             this.handleCancel();
             this.getData();
@@ -335,7 +333,7 @@ export default {
     },
     async getData() {
       this.loading = true
-      const res = await rechargAuditList(this.queryParam)
+      const res = await withrawAuditList(this.queryParam)
       const { code, data } = res
       if (code === 0) {
         this.loadData = data.records

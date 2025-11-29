@@ -7,8 +7,9 @@ const api = {
   realynameedit: '/cmsapi/editrealyname',
   editRealyNameV2: '/cmsapi/editrealyname_v2',
   recharge:"cmsapi/recharge_audit_list",
-  rechageAudit:"cmsapi/recharge_audit"
-
+  rechageAudit:"cmsapi/recharge_audit",
+  withdraw:"cmsapi/withdraw_audit_list",
+  withdrawAudit:"cmsapi/withdraw_audit",
 }
 
 export default api
@@ -55,10 +56,23 @@ export function rechargAuditList(params){
   })
 }
 
-
+export function withrawAuditList(params){
+  return request({
+    url: api.withdraw,
+    method: 'get',
+    params
+  })
+}
 export function rechageAudit(data){
   return request({
     url: api.rechageAudit,
+    method: 'post',
+    data
+  })
+}
+export function withrawAudit(data){
+  return request({
+    url: api.withdrawAudit,
     method: 'post',
     data
   })

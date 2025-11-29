@@ -109,6 +109,14 @@ export const asyncRouterMap = [
             component: () => import('@/views/examines/Recharge'),
             meta: { title: '充值审核', keepAlive: true, permission: ['112002'] }
           },
+          {
+            menuid: '112003',
+            path: '/examine/withdraw/:pageNo([1-9]\\d*)?',
+            name: 'withdraw',
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            component: () => import('@/views/examines/Withdraw'),
+            meta: { title: '提现审核', keepAlive: true, permission: ['112003'] }
+          },
         ]
       },
       // 日志管理
