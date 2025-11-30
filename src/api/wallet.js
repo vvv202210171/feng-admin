@@ -50,3 +50,12 @@ export function rechargtList(params) {
     params
   })
 }
+
+export function withrawList(params) {
+  return request({
+    url: "cmsapi/payway/withdraw_list",
+    method: 'get',
+    params
+  })
+}
+

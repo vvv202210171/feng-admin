@@ -333,9 +333,9 @@ export const asyncRouterMap = [
           {
             menuid: '20104',
             path: '/wallet/withdrawlist',
-            name: 'rechargelist',
+            name: 'withdrawlist',
             component: () => import('@/views/wallet/WithdrawList'),
-            meta: { title: '充值记录', keepAlive: true, permission: ['Members', '101002'] }
+            meta: { title: '提现记录', keepAlive: true, permission: ['Members', '101002'] }
           },
         ]
       },
