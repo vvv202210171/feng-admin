@@ -317,13 +317,26 @@ export const asyncRouterMap = [
             meta: { title: '充值方式', keepAlive: true, permission: ['Members', '101002'] }
           },
                 {
-            menuid: '20101',
-            path: '/report/membercount',
-            name: 'MemberCountList',
-            component: () => import('@/views/report/MemberCount'),
+            menuid: '20102',
+            path: '/wllet/outpay',
+            name: 'OutPay',
+            component: () => import('@/views/wallet/OutPayWay'),
             meta: { title: '提现方式', keepAlive: true, permission: ['Members', '101002'] }
           },
-
+          {
+            menuid: '20103',
+            path: '/wallet/rechargelist',
+            name: 'rechargelist',
+            component: () => import('@/views/wallet/RechargeList'),
+            meta: { title: '充值记录', keepAlive: true, permission: ['Members', '101002'] }
+          },
+          {
+            menuid: '20104',
+            path: '/wallet/withdrawlist',
+            name: 'rechargelist',
+            component: () => import('@/views/wallet/WithdrawList'),
+            meta: { title: '充值记录', keepAlive: true, permission: ['Members', '101002'] }
+          },
         ]
       },
 
