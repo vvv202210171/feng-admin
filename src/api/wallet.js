@@ -42,3 +42,11 @@ export function updateBankData(data) {
     data
   })
 }
+
+export function rechargtList(params) {
+  return request({
+    url: "cmsapi/payway/recharge_list",
+    method: 'get',
+    params
+  })
+}

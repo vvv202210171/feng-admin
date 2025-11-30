@@ -11,7 +11,16 @@
             <a-select-option value=""> 请选择 </a-select-option>
 
             <a-select-option v-for="item in enums['PaymentMethod']" :key="item.code" :value="item.code">{{ item.desc
-              }}</a-select-option>
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-select style="width: 100px" v-model="queryParam.status">
+            <a-select-option value=""> 请选择 </a-select-option>
+
+            <a-select-option v-for="item in enums['TransactionStatusEnum']" :key="item.code" :value="item.code">{{
+              item.desc
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="时间">
@@ -28,49 +37,23 @@
         <template slot="paymentMethod" slot-scope="text, record">
           {{ getDesc('PaymentMethod', record.paymentMethod) }}
         </template>
-
-        <template slot="state" slot-scope="text, record">
-          <span v-if="record.state === 'enable'">启用</span>
-          <span v-if="record.state === 'disable'" style="color: #eb1345">冻结</span>
+        <template slot="status" slot-scope="text, record">
+          {{ getDesc('TransactionStatusEnum', record.status) }}
         </template>
+
 
         <template slot="imgurl" slot-scope="text, record">
           <span v-if="record.zm === '--'"></span>
           <img v-else :src="imgUrl(record.imgurl)" height="150" width="200" />
         </template>
-
-        <template slot="fm" slot-scope="text, record">
-          <span v-if="record.fm === '--'"></span>
-          <img v-else :src="imgUrl(record.fm)" height="150" width="200" />
-        </template>
-
-        <template slot="sc" slot-scope="text, record">
-          <span v-if="record.sc === '--'"></span>
-          <img v-else :src="imgUrl(record.sc)" height="150" width="200" />
-        </template>
-
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a @click="pass(record)" :disabled="!$verify('112011')">通过</a>
-            <a-divider type="vertical" />
-            <a @click="reject(record)" :disabled="!$verify('112011')">拒绝</a>
-            <!-- 
-            <a @click="handleDel(record)">删除</a> -->
-          </template>
-        </span>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-          <a-card title="用户详情">
-            <a-card-grid style="width: 16.6666%; line-height: 10px" v-for="(key, index) in columns2" :key="index">
-              <template>
-                <span>{{ key.title }}</span>:<span>{{ record[key.dataIndex] }}</span>
-              </template>
-            </a-card-grid>
-          </a-card>
+          <a-card-grid style="width: 16.6666%; line-height: 10px" v-for="(key, index) in columns2" :key="index">
+            <template>
+              <span>{{ key.title }}</span>:<span>{{ record[key.dataIndex] }}</span>
+            </template>
+          </a-card-grid>
         </p>
       </a-table>
-
-      <s-modal ref="createModal" :config="modalConfig" :visible="visible" :loading="confirmLoading"
-        :options="modalOptions" :model="mdl" @cancel="handleCancel" @ok="handleOk" />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -78,17 +61,9 @@
 <script>
 import { STable, Ellipsis, SModal } from '@/components'
 import {
-  // getRoleList,
-  rechargAuditList,
-  // delRealyName,
-  // addRealyName,
-  editRealyName,
-  rechageAudit
-} from '@/api/examine'
-// import { Modal } from 'ant-design-vue'
+  rechargtList,
+} from '@/api/wallet'
 
-// import StepByStepModal from './modules/StepByStepModal'
-// import CreateForm from './modules/RealyNameForm'
 
 const columns = [
   {
@@ -106,11 +81,7 @@ const columns = [
     title: '真实姓名',
     width: 100
   },
-  {
-    dataIndex: 'nickName',
-    title: '昵称',
-    width: 100
-  },
+
   {
     dataIndex: 'tel',
     title: '电话',
@@ -126,6 +97,12 @@ const columns = [
     title: '支付方式',
     width: 100,
     scopedSlots: { customRender: 'paymentMethod' }
+  },
+  {
+    dataIndex: 'status',
+    title: '状态',
+    width: 100,
+    scopedSlots: { customRender: 'status' }
   },
   {
     dataIndex: 'amount',
@@ -150,16 +127,15 @@ const columns = [
     title: '创建时间',
     width: 120,
   },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: 150,
-    scopedSlots: { customRender: 'action' }
-  }
 ]
 
 
 const columns2 = [
+  {
+    dataIndex: 'nickName',
+    title: '昵称',
+    width: 100
+  },
   {
     title: '银行',
     dataIndex: 'bankName',
@@ -186,17 +162,7 @@ const columns2 = [
     width: 100,
   },
 ]
-const modalOptions = [
-  { title: '编号', field: 'id', type: 'input', decorator: {}, disabled: true, hidden: true },
-  { title: '单号', field: 'transactionNumber', type: 'input', decorator: {}, disabled: true },
 
-  {
-    title: '原因(会员可见)',
-    field: 'reason',
-    type: 'input',
-    placeholder: '如果是驳回，请输入原因'
-  }
-]
 
 export default {
   name: 'RealyNameList',
@@ -216,7 +182,6 @@ export default {
       visible: false,
       confirmLoading: false,
       mdl: null,
-      modalOptions,
       roleMenus: [],
       modalConfig: {},
       // 高级搜索 展开/关闭
@@ -268,23 +233,7 @@ export default {
     }
   },
   methods: {
-    pass(record) {
-      const _this = this;
-      this.$confirm({
-        "title": "您确定要通过吗？" + record.transactionNumber, async onOk() {
-          const ret = await rechageAudit({
-            id: record.id, oper: "pass"
-          });
-          if (ret.code == 0) {
-            _this.getData();
-          } else {
-            _this.$message.error(ret.msg)
-          }
 
-        }
-      });
-
-    },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
@@ -295,31 +244,7 @@ export default {
     endChange(date, dateString) {
       this.queryParam.enddate = dateString
     },
-    reject(record) {
-      // get menu data
-      this.roleMenus = []
-      this.visible = true
-      this.mdl = { ...record }
-      this.mdl.reason = ''
-      this.modalConfig['title'] = '审核信息'
-    },
-    handleOk() {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields(async (errors, values) => {
-        if (!errors) {
-          const ret = await rechageAudit({ reason: values.reason, id: values.id, oper: "reject" })
-          if (ret.code == 0) {
-            this.handleCancel();
-            this.getData();
-          } else {
-            this.$message.error(ret.msg)
-          }
-        }
-        this.confirmLoading = false
 
-      })
-    },
     handleCancel() {
       this.visible = false
       this.confirmLoading = false
@@ -335,7 +260,7 @@ export default {
     },
     async getData() {
       this.loading = true
-      const res = await rechargAuditList(this.queryParam)
+      const res = await rechargtList(this.queryParam)
       const { code, data } = res
       if (code === 0) {
         this.loadData = data.records
