@@ -26,7 +26,7 @@ export function handleScrollHeader(callback) {
   let timer = 0
 
   let beforeScrollTop = window.pageYOffset
-  callback = callback || function () {}
+  callback = callback || function () { }
   window.addEventListener(
     'scroll',
     (event) => {
@@ -195,11 +195,14 @@ export function getPermissionIdOrTitle(str) {
 
     150: '报表统计',
 
-    201:"钱包管理",
-    20101:"充值方式",
-    20102:"提现方式",
-    20103:"充值记录",
-    20104:"提现记录",
+    201: "钱包管理",
+    20101: "充值方式",
+    20102: "提现方式",
+    20103: "充值记录",
+    20104: "提现记录",
+
+    301: "在线客服",
+    30101: "客服列表",
 
   }
 

@@ -42,7 +42,7 @@ export const asyncRouterMap = [
         component: RouteView,
         redirect: '/members/memberlist',
         meta: { title: '用户管理', icon: 'user', permission: ['Members', '101'] },
-        children:[ 
+        children: [
           {
             menuid: '101001',
             path: '/members/memberonlinelist/:pageNo([1-9]\\d*)?',
@@ -82,7 +82,7 @@ export const asyncRouterMap = [
             component: () => import('@/views/memberlist/MemberBalck'),
             meta: { title: '用户IP黑名单', keepAlive: true, permission: ['Members', '101006'] }
           }
-    ]
+        ]
       },
       // 待审核管理
       {
@@ -301,7 +301,7 @@ export const asyncRouterMap = [
         ]
       },
       //钱包管理
-    {
+      {
         menuid: '201',
         path: '/wllet',
         name: 'wllet',
@@ -316,7 +316,7 @@ export const asyncRouterMap = [
             component: () => import('@/views/wallet/InPayWay'),
             meta: { title: '充值方式', keepAlive: true, permission: ['Members', '101002'] }
           },
-                {
+          {
             menuid: '20102',
             path: '/wllet/outpay',
             name: 'OutPay',
@@ -337,6 +337,25 @@ export const asyncRouterMap = [
             component: () => import('@/views/wallet/WithdrawList'),
             meta: { title: '提现记录', keepAlive: true, permission: ['Members', '101002'] }
           },
+        ]
+      },
+      //在线客服
+      {
+        menuid: '301',
+        path: '/cs',
+        name: 'cs',
+        component: RouteView,
+        redirect: '/cs/cs',
+        meta: { title: '在线客服', icon: 'customer-service', permission: ['SystemSetting', '150'] },
+        children: [
+          {
+            menuid: '30101',
+            path: '/cs/cs',
+            name: 'cs',
+            component: () => import('@/views/cs/cs'),
+            meta: { title: '客服列表', keepAlive: true, permission: ['Members', '30101'] }
+          },
+
         ]
       },
 
