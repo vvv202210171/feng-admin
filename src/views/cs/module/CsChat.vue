@@ -11,7 +11,9 @@
 <script>
 import UserList from './UserList.vue';
 import ChatWindow from './ChatWindow.vue';
-import { loadaUserList } from '@/api/cs'
+import { loadaUserList } from '@/api/cs';
+import WebSocketService from '@/utils/Websocket'; // 导入 WebSocket 服务
+import { mapActions } from 'vuex';
 
 export default {
     props: {
@@ -27,7 +29,7 @@ export default {
     data() {
         return {
             selectedUser: null, // 当前选中的用户
-            userDataList: []
+            userDataList: [],
         };
     },
     methods: {
@@ -35,28 +37,49 @@ export default {
         selectUser(user) {
             this.selectedUser = user;
         },
+
+        // 初始化 WebSocket 连接
+        initWebsocket(customService) {
+            WebSocketService.init(customService.key); // 初始化 WebSocket
+            WebSocketService.addListener(this.handleReceivedMessage); // 注册消息监听
+        },
+
         // 发送消息
         sendMessage(message) {
-            // 通过 WebSocket 或其他方式发送消息
-            console.log(`发送消息给 ${this.selectedUser.name}: ${message}`);
+            if (this.selectedUser) {
+                const msgData = {
+                    from: this.customerService.id, // 客服ID
+                    to: this.selectedUser.id, // 目标用户ID
+                    content: message,
+                };
+                WebSocketService.sendMessage(msgData); // 通过 WebSocket 发送消息
+            }
         },
+
+        // 处理收到的消息
+        handleReceivedMessage(message) {
+            this.$store.dispatch('chat/receiveMessage', message); // 将收到的消息存储到 Vuex
+        },
+
+        // 加载用户列表
         async loadUserList(id) {
             const ret = await loadaUserList({ id });
-            this.userDataList = ret.data
-        }
+            this.userDataList = ret.data;
+        },
     },
+
     watch: {
-        // 监听 prop 变化
+        // 监听 customerService prop 变化
         customerService: {
             handler(val) {
-                // 当 customerService 发生变化时调用 loadUserList
                 if (val && val.id) {
                     this.loadUserList(val.id);
+                    this.initWebsocket(val); // 初始化 WebSocket
                 }
             },
             immediate: true, // 初始时就调用一次
         },
-    }
+    },
 };
 </script>
 
