@@ -4,12 +4,12 @@
             <h3>{{ (user.nickName || user.username) + '-' + user.member }} - 聊天</h3>
         </div>
         <div class="chat-messages" ref="messagesContainer">
-            <div v-for="(msg, index) in userMessages" :key="index"
+            <div v-for="(msg, index) in messages" :key="index"
                 :class="['message', msg.senderType === 'user' ? 'user-message' : 'cs-message']">
                 <div class="message-info">
                     <!-- 显示头像 -->
                     <img :src="getImg(msg)" class="avatar" alt="头像" />
-                    <span class="nickname">{{ msg.senderType === 'user' ? user.nickName || user.username :
+                    <span class="nickname">{{ msg.senderType === 'user' ? (user.nickName || user.username) :
                         customerService.name }}</span>
                 </div>
                 <div class="message-content">
@@ -36,15 +36,11 @@ export default {
     data() {
         return {
             newMessage: '', // 输入的消息
-            messageList: [...this.messages], // 将 prop 的 messages 复制到 data
+
         };
     },
-    computed: {
-        userMessages() {
-            return this.messageList.filter(v =>
-                v.senderType === 'user' ? (v.fromUser.member === this.user.member) : (this.user.member === v.to.member)
-            );
-        }
+    mounted() {
+        this.scrollToBottom();
     },
     methods: {
         // 自定义上传逻辑
@@ -99,14 +95,7 @@ export default {
             }
         },
     },
-    watch: {
-        messages(newMessages) {
-            console.log("messages updated");
-            this.messageList = newMessages[this.customerService.id] // 更新 messageList
-            this.scrollToBottom(); // 滚动到底部
-        }
-    },
-};
+}
 
 </script>
 

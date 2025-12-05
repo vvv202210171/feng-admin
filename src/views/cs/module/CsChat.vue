@@ -2,16 +2,11 @@
     <div class="chat-client">
 
         <!-- 左侧用户列表 -->
-
         <user-list @select-user="selectUser" :onlineUsers="userDataList" />
 
-
-
         <!-- 右侧聊天窗口 -->
-
-        <chat-window v-if="selectedUser" :user="selectedUser" :customerService="customerService"
-            @send-message="sendMessage" :messages="messages" />
-
+        <chat-window v-if="chatVis" :user="selectedUser" :customerService="customerService" @send-message="sendMessage"
+            :messages="messages" />
     </div>
 </template>
 
@@ -34,26 +29,52 @@ export default {
     },
     data() {
         return {
-            messages: {},
+            messages: [], // 存储所有消息
+            chatVis: false, // 控制聊天窗口显示
             selectedUser: null, // 当前选中的用户
-            userDataList: [],
+            userDataList: [], // 存储用户列表
         };
+    },
+    destroyed() {
+        this.closeWebSocket();
     },
     methods: {
         // 选择用户，显示聊天窗口
         selectUser(user) {
             this.selectedUser = user;
+            this.chatVis = false; // 先隐藏聊天窗口
+
+            setTimeout(() => {
+                this.chatVis = true; // 再显示聊天窗口
+                // 过滤出当前选中用户的消息
+                this.messages = this.messages.filter(v =>
+                    v.senderType === 'user' ? v.fromUser.member === user.member : v.to.member === user.member
+                );
+            }, 100);
+        },
+
+        // 关闭 WebSocket 连接
+        closeWebSocket() {
+            if (WebSocketService.websocket) {
+                WebSocketService.websocket.close();
+                WebSocketService.websocket = null; // 清空 WebSocket 对象
+            }
         },
 
         // 初始化 WebSocket 连接
         initWebsocket(customService) {
+            this.closeWebSocket(); // 先关闭已有连接
+
             // 设置 WebSocket 连接成功后的回调
             WebSocketService.setOnOpenCallback(() => {
                 this.sendInit(customService); // 连接成功后发送初始化消息
             });
+
             WebSocketService.init(customService.key); // 初始化 WebSocket
             WebSocketService.addListener(this.handleReceivedMessage); // 注册消息监听
         },
+
+        // 发送初始化消息
         sendInit(customerService) {
             const msgData = {
                 chatType: 'cs',
@@ -62,6 +83,7 @@ export default {
             };
             WebSocketService.sendMessage(msgData); // 通过 WebSocket 发送消息
         },
+
         // 发送消息
         sendMessage(data) {
             if (this.selectedUser) {
@@ -79,14 +101,14 @@ export default {
         // 处理收到的消息
         handleReceivedMessage(message) {
             switch (message.chatType) {
-                case 'cs': // 客服
+                case 'cs':
                     switch (message.content.command) {
                         case "INIT":
                             const arr = JSON.parse(message.content.text);
-                            // 确保 arr 存在并且长度大于 0
                             if (arr && arr.length > 0) {
-                                this.messages[this.customerService.id] = arr.map(v => {
-                                    let sendType = v.senderType == 'user';
+                                // 更新 messages 数组，使用 Vue.set 来保持响应式
+                                this.messages = arr.map(v => {
+                                    let sendType = v.senderType === 'user';
                                     return {
                                         senderType: v.senderType,
                                         fromUser: { member: sendType ? v.member : v.customerServiceId },
@@ -95,45 +117,34 @@ export default {
                                         createdAt: v.createdAt,
                                         msgType: v.messageType,
                                         content: { text: v.message }
-                                    }
+                                    };
                                 });
-
-                                message.content.command = "SEND";
-                                WebSocketService.sendMessage(message);
                             }
                             break;
 
                         case "USER2CUSTOMER":
-                            // 用户发送给客服的消息
-                            console.log("USER2CUSTOMER==>", message)
-                            if (!this.messages[this.customService.id]) {
-                                this.messages[this.customService.id] = [];
-                            }
-                            this.messages[this.customService.id].push(message)
+                            message.senderType = "user";
+                            this.$set(this.messages, this.messages.length, message);  // 使用 Vue.set 来添加新消息
                             break;
 
                         case "CUSTOMER2USER":
-                            // 客服发送给用户的消息
-                            if (!this.messages[this.customService.id]) {
-                                this.messages[this.customService.id] = [];
-                            }
-                            this.messages[this.customService.id].push(message)
+                            this.$set(this.messages, this.messages.length, message);  // 使用 Vue.set 来添加新消息
                             break;
+
                         case "ERR":
-                            // 客服发送给用户的消息
                             console.error(message);
                             break;
+
                         default:
                             console.warn('未知的命令类型:', message.content.command);
                             break;
                     }
                     break;
-                // 其他 chatType 处理
+
                 default:
                     console.warn('未知的 chatType:', message.chatType);
                     break;
             }
-
         },
 
         // 加载用户列表
@@ -143,17 +154,9 @@ export default {
         },
     },
 
-    watch: {
-        // 监听 customerService prop 变化
-        customerService: {
-            handler(val) {
-                if (val && val.id) {
-                    this.loadUserList(val.id);
-                    this.initWebsocket(val); // 初始化 WebSocket
-                }
-            },
-            immediate: true, // 初始时就调用一次
-        },
+    created() {
+        this.loadUserList(this.customerService.id); // 加载用户列表
+        this.initWebsocket(this.customerService); // 初始化 WebSocket 连接
     },
 };
 </script>
@@ -162,18 +165,14 @@ export default {
 .chat-client {
     width: 500px;
     display: flex;
-
-
 }
 
 /* 左侧用户列表 */
-
 .chat-client>.user-list {
     width: 250px;
 }
 
 /* 右侧聊天窗口 */
-
 .chat-client>.chat-window {
     flex: 1;
     display: flex;

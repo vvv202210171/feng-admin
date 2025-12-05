@@ -35,8 +35,9 @@
 
             </a-card>
 
-            <CsChat :customerService="customerService" style="flex: 1;height:800px;min-width: 650;"
-                v-if="customerService"></CsChat>
+            <CsChat :customerService="customerService" style="flex: 1;height:800px;min-width: 650;" ref="chatWindow"
+                v-if="cisCHat">
+            </CsChat>
         </div>
         <s-modal ref="editModal" :visible="visible" :loading="confirmLoading" :options="editOptions" :model="mdl"
             @cancel="handleCancel" @ok="handleOk" />
@@ -151,6 +152,7 @@ export default {
             roleMenus: [],
             // 高级搜索 展开/关闭
             advanced: false,
+            cisCHat: false,
             // // 搜索状态
             // disabledSearch: false,
             // 查询参数
@@ -236,7 +238,15 @@ export default {
             })
         },
         openCs(row) {
-            this.customerService = row;
+            this.cisCHat = false;
+
+            setTimeout(() => {
+                // 先关闭之前的 WebSocket 连接
+                this.cisCHat = true;
+                this.customerService = row;
+
+            }, 100);
+
         },
         handleCancel() {
             this.visible = false
