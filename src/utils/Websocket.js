@@ -1,6 +1,7 @@
 class WebSocketService {
     constructor() {
         this.websocket = null;
+        this.onOpenCallbackFn = null; // 连接成功时执行的回调
         this.eventListeners = [];
         this.pingInterval = null;  // 用于保存心跳定时器
         this.pingIntervalTime = 30000; // 默认每 30 秒发送一次心跳（你可以根据需求调整）
@@ -13,6 +14,9 @@ class WebSocketService {
 
         this.websocket.onopen = () => {
             console.log('WebSocket connected');
+            if (this.onOpenCallbackFn) {
+                this.onOpenCallbackFn(); // 连接成功时执行的回调
+            }
             this.startPing();  // 连接成功后开始发送心跳
         };
 
@@ -33,6 +37,7 @@ class WebSocketService {
 
     // 发送消息
     sendMessage(message) {
+        console.log("即将发送", message)
         if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
             this.websocket.send(JSON.stringify(message));
             console.log('消息发送:', message);
@@ -47,7 +52,10 @@ class WebSocketService {
             listener(message); // 将消息传递给注册的监听器
         });
     }
-
+    // 设置连接成功后调用的回调
+    setOnOpenCallback(callback) {
+        this.onOpenCallbackFn = callback;
+    }
     // 注册消息监听器
     addListener(listener) {
         this.eventListeners.push(listener);
