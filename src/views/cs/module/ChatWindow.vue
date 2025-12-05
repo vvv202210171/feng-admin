@@ -1,5 +1,5 @@
 <template>
-    <div class="chat-window">
+    <div class="chat-window" v-if="user">
         <div class="chat-header">
             <h3>{{ (user.nickName || user.username) + '-' + user.member }} - 聊天</h3>
         </div>

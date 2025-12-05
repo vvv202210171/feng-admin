@@ -5,8 +5,8 @@
         <user-list @select-user="selectUser" :onlineUsers="userDataList" />
 
         <!-- 右侧聊天窗口 -->
-        <chat-window v-if="chatVis" :user="selectedUser" :customerService="customerService" @send-message="sendMessage"
-            :messages="messages" />
+        <chat-window :user="selectedUser" :customerService="customerService" @send-message="sendMessage"
+            v-if="selectedUser && Object.keys(selectedUser).length > 0" :messages="userMsgList" />
     </div>
 </template>
 
@@ -31,9 +31,16 @@ export default {
         return {
             messages: [], // 存储所有消息
             chatVis: false, // 控制聊天窗口显示
-            selectedUser: null, // 当前选中的用户
+            selectedUser: {}, // 当前选中的用户
             userDataList: [], // 存储用户列表
         };
+    },
+    computed: {
+        userMsgList() {
+            return this.messages.filter(v =>
+                v.senderType === 'user' ? v.fromUser.member === this.selectedUser.member : v.to.member === this.selectedUser.member
+            );
+        }
     },
     destroyed() {
         this.closeWebSocket();
@@ -42,15 +49,7 @@ export default {
         // 选择用户，显示聊天窗口
         selectUser(user) {
             this.selectedUser = user;
-            this.chatVis = false; // 先隐藏聊天窗口
 
-            setTimeout(() => {
-                this.chatVis = true; // 再显示聊天窗口
-                // 过滤出当前选中用户的消息
-                this.messages = this.messages.filter(v =>
-                    v.senderType === 'user' ? v.fromUser.member === user.member : v.to.member === user.member
-                );
-            }, 100);
         },
 
         // 关闭 WebSocket 连接
