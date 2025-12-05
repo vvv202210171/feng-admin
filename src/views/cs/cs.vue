@@ -35,7 +35,8 @@
 
             </a-card>
 
-            <CsChat :customerService="customerService" style="flex: 1;" v-if="customerService"></CsChat>
+            <CsChat :customerService="customerService" style="flex: 1;height:800px;min-width: 650;"
+                v-if="customerService"></CsChat>
         </div>
         <s-modal ref="editModal" :visible="visible" :loading="confirmLoading" :options="editOptions" :model="mdl"
             @cancel="handleCancel" @ok="handleOk" />

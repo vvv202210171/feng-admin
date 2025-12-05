@@ -34,7 +34,7 @@ export default {
     },
     data() {
         return {
-            messages: [],
+            messages: {},
             selectedUser: null, // 当前选中的用户
             userDataList: [],
         };
@@ -42,9 +42,7 @@ export default {
     methods: {
         // 选择用户，显示聊天窗口
         selectUser(user) {
-            console.log(user, this.customerService)
             this.selectedUser = user;
-            console.log(this.messages)
         },
 
         // 初始化 WebSocket 连接
@@ -69,8 +67,8 @@ export default {
             if (this.selectedUser) {
                 const msgData = {
                     chatType: 'cs',
-                    from: this.customerService.id, // 客服ID
-                    to: this.selectedUser.member, // 目标用户ID
+                    fromUser: { member: this.customerService.id }, // 客服ID
+                    to: { member: this.selectedUser.member }, // 目标用户ID
                     msgType: data.msgType,
                     content: { command: "CUSTOMER2USER", text: data.text },
                 };
@@ -80,7 +78,6 @@ export default {
 
         // 处理收到的消息
         handleReceivedMessage(message) {
-
             switch (message.chatType) {
                 case 'cs': // 客服
                     switch (message.content.command) {
@@ -88,7 +85,7 @@ export default {
                             const arr = JSON.parse(message.content.text);
                             // 确保 arr 存在并且长度大于 0
                             if (arr && arr.length > 0) {
-                                this.messages = arr.map(v => {
+                                this.messages[this.customerService.id] = arr.map(v => {
                                     let sendType = v.senderType == 'user';
                                     return {
                                         senderType: v.senderType,
@@ -108,14 +105,24 @@ export default {
 
                         case "USER2CUSTOMER":
                             // 用户发送给客服的消息
-                            commit('ADD_MESSAGE', { chatType: 'cs', message: processedMessage });
+                            console.log("USER2CUSTOMER==>", message)
+                            if (!this.messages[this.customService.id]) {
+                                this.messages[this.customService.id] = [];
+                            }
+                            this.messages[this.customService.id].push(message)
                             break;
 
                         case "CUSTOMER2USER":
                             // 客服发送给用户的消息
-                            commit('ADD_MESSAGE', { chatType: 'cs', message: processedMessage });
+                            if (!this.messages[this.customService.id]) {
+                                this.messages[this.customService.id] = [];
+                            }
+                            this.messages[this.customService.id].push(message)
                             break;
-
+                        case "ERR":
+                            // 客服发送给用户的消息
+                            console.error(message);
+                            break;
                         default:
                             console.warn('未知的命令类型:', message.content.command);
                             break;
@@ -155,7 +162,8 @@ export default {
 .chat-client {
     width: 500px;
     display: flex;
-    height: 100vh;
+
+
 }
 
 /* 左侧用户列表 */

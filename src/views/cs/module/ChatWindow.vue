@@ -3,7 +3,7 @@
         <div class="chat-header">
             <h3>{{ (user.nickName || user.username) + '-' + user.member }} - 聊天</h3>
         </div>
-        <div class="chat-messages">
+        <div class="chat-messages" ref="messagesContainer">
             <div v-for="(msg, index) in userMessages" :key="index"
                 :class="['message', msg.senderType === 'user' ? 'user-message' : 'cs-message']">
                 <div class="message-info">
@@ -13,12 +13,16 @@
                         customerService.name }}</span>
                 </div>
                 <div class="message-content">
-                    <span>{{ msg.content.text }}</span>
+                    <img :src="imgUrl(msg.content.text)" v-if="msg.msgType == 'image'"></img>
+                    <span v-else>{{ msg.content.text }}</span>
                 </div>
             </div>
         </div>
         <div class="chat-input">
-            <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="输入消息..." />
+            <a-upload :customRequest="customRequest" :multiple="false" :fileList="[]">
+                <a-icon type="plus-circle" class="icon" style="font-size: 38px;" />
+            </a-upload>
+            <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="输入消息..." class="ml6" />
             <button @click="sendMessage">发送</button>
         </div>
     </div>
@@ -26,21 +30,48 @@
 
 
 <script>
+import { uploadingImg } from "@/api/manage";
 export default {
     props: ['user', 'messages', 'customerService'],
     data() {
         return {
             newMessage: '', // 输入的消息
+            messageList: [...this.messages], // 将 prop 的 messages 复制到 data
         };
     },
     computed: {
         userMessages() {
-            return this.messages.filter(v =>
+            return this.messageList.filter(v =>
                 v.senderType === 'user' ? (v.fromUser.member === this.user.member) : (this.user.member === v.to.member)
             );
         }
     },
     methods: {
+        // 自定义上传逻辑
+        async customRequest({ file, onSuccess, onError }, item) {
+            console.log("item", item);
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await uploadingImg(formData);
+                if (response.code === 0) {
+                    const message = {
+                        msgType: 'image',
+                        text: response.data.match(/[^/]+\.png$/)[0],
+                        senderType: 'user', // 假设发送的消息是用户的
+                    };
+
+                    this.$emit('send-message', message); // 发送消息到父组件或后端
+                } else {
+                    this.$message.error("上传失败");
+                }
+            } catch (error) {
+                console.log(error);
+                this.$message.error("上传出错");
+                onError(error);
+            }
+        },
         getImg(msg) {
             if (msg.senderType === 'user') {
                 return this.user.avatar ? this.imgUrl(this.user.avatar) : require('@/assets/user.jpg');
@@ -51,7 +82,7 @@ export default {
             if (this.newMessage.trim()) {
                 const message = {
                     msgType: 'text',
-                    content: { text: this.newMessage },
+                    text: this.newMessage,
                     senderType: 'user', // 假设发送的消息是用户的
                 };
 
@@ -59,6 +90,21 @@ export default {
                 this.$emit('send-message', message); // 发送消息到父组件或后端
             }
         },
+        scrollToBottom() {
+            // 获取消息容器
+            const messagesContainer = this.$refs.messagesContainer;
+            if (messagesContainer) {
+                // 滚动到最底部
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        },
+    },
+    watch: {
+        messages(newMessages) {
+            console.log("messages updated");
+            this.messageList = newMessages[this.customerService.id] // 更新 messageList
+            this.scrollToBottom(); // 滚动到底部
+        }
     },
 };
 
@@ -136,27 +182,33 @@ export default {
             display: flex;
             padding: 10px;
             border-top: 1px solid #ddd;
+
+            .icon {
+                font-size: 38px;
+            }
+
+            input {
+                flex: 1;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            button {
+                padding: 5px 10px;
+                margin-left: 10px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+            }
+
+            button:hover {
+                background-color: #0056b3;
+            }
         }
 
-        .chat-input input {
-            flex: 1;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
 
-        .chat-input button {
-            padding: 5px 10px;
-            margin-left: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-
-        .chat-input button:hover {
-            background-color: #0056b3;
-        }
     }
 
 
