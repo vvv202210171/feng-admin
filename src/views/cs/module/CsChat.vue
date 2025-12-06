@@ -2,7 +2,7 @@
     <div class="chat-client">
 
         <!-- 左侧用户列表 -->
-        <user-list @select-user="selectUser" :onlineUsers="onlineUsers" />
+        <user-list @select-user="selectUser" :onlineUsers="onlineUsers" :customerService="customerService" />
 
         <!-- 右侧聊天窗口 -->
         <chat-window :user="selectedUser" :customerService="customerService" @send-message="sendMessage"

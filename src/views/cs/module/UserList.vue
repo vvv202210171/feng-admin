@@ -1,6 +1,6 @@
 <template>
   <div class="user-list">
-    <h2>在线用户</h2>
+    <h2>{{ customerService.name }}</h2>
     <ul>
       <li v-for="user in onlineUsers" :key="user.id" @click="selectUser(user)">
 
@@ -19,6 +19,10 @@
 <script>
 export default {
   props: {
+    customerService: {
+      type: Array,
+      default: () => [],
+    },
     onlineUsers: {
       type: Array,
       default: () => [],
