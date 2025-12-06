@@ -3,9 +3,14 @@
     <h2>在线用户</h2>
     <ul>
       <li v-for="user in onlineUsers" :key="user.id" @click="selectUser(user)">
+
         <!-- 显示用户头像 -->
         <img :src="userAvartar(user)" alt="avatar" class="user-avatar" />
+
         {{ (user.nickName || user.username) + ' - ' + user.member }}
+        <a-badge dot v-if="user.isNew">
+        </a-badge>
+
       </li>
     </ul>
   </div>

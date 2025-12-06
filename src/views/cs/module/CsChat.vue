@@ -2,7 +2,7 @@
     <div class="chat-client">
 
         <!-- 左侧用户列表 -->
-        <user-list @select-user="selectUser" :onlineUsers="userDataList" />
+        <user-list @select-user="selectUser" :onlineUsers="onlineUsers" />
 
         <!-- 右侧聊天窗口 -->
         <chat-window :user="selectedUser" :customerService="customerService" @send-message="sendMessage"
@@ -40,6 +40,9 @@ export default {
             return this.messages.filter(v =>
                 v.senderType === 'user' ? v.fromUser.member === this.selectedUser.member : v.to.member === this.selectedUser.member
             );
+        },
+        onlineUsers() {
+            return this.userDataList;
         }
     },
     destroyed() {
@@ -49,6 +52,7 @@ export default {
         // 选择用户，显示聊天窗口
         selectUser(user) {
             this.selectedUser = user;
+            user.isNew = false;
 
         },
 
@@ -104,10 +108,16 @@ export default {
                     switch (message.content.command) {
                         case "INIT":
                             const arr = JSON.parse(message.content.text);
+                            let unsents = [];
                             if (arr && arr.length > 0) {
                                 // 更新 messages 数组，使用 Vue.set 来保持响应式
+                                const _this = this;
                                 this.messages = arr.map(v => {
                                     let sendType = v.senderType === 'user';
+                                    if (sendType && v.status == 'unsent') {
+                                        _this.setUserNew(v.member)
+                                        unsents.push(v)
+                                    }
                                     return {
                                         senderType: v.senderType,
                                         fromUser: { member: sendType ? v.member : v.customerServiceId },
@@ -118,11 +128,19 @@ export default {
                                         content: { text: v.message }
                                     };
                                 });
+
+                                if (unsents.length > 0) {
+                                    message.content.text = JSON.stringify(unsents);
+                                    message.content.command = "SEND";
+                                    WebSocketService.sendMessage(message);
+                                }
+
                             }
                             break;
 
                         case "USER2CUSTOMER":
                             message.senderType = "user";
+                            this.setUserNew(message.fromUser.member)
                             this.$set(this.messages, this.messages.length, message);  // 使用 Vue.set 来添加新消息
                             break;
 
@@ -145,17 +163,27 @@ export default {
                     break;
             }
         },
-
+        setUserNew(member) {
+            const user = this.userDataList.find(element => element.member === member);
+            console.log(this.userDataList, member)
+            if (user && user.isNew != true) {
+                this.$set(user, 'isNew', true);  // 只设置当前用户的 isNew
+            }
+        },
         // 加载用户列表
         async loadUserList(id) {
             const ret = await loadaUserList({ id });
             this.userDataList = ret.data;
+            if (this.userDataList.length <= 0) {
+                return
+            }
+            this.initWebsocket(this.customerService); // 初始化 WebSocket 连接
         },
     },
 
     created() {
         this.loadUserList(this.customerService.id); // 加载用户列表
-        this.initWebsocket(this.customerService); // 初始化 WebSocket 连接
+
     },
 };
 </script>
